@@ -15,18 +15,18 @@ class _HomePageState extends State<HomePage> {
 
   final List<Map<String, String>> _mockPets = [
     {
-      'name': 'Luna',
-      'photo': 'https://images.unsplash.com/photo-1558944351-c0d5f0f1be6a',
-      'description': 'Carinhosa e brincalhona, ama correr no parque.',
+      'name': 'Andrews',
+      'photo': 'https://i.imgur.com/I1Zsu1m.jpeg',
+      'description': 'Carinhoso e brincalhão, ama correr no parque.',
     },
     {
-      'name': 'Thor',
-      'photo': 'https://images.unsplash.com/photo-1560807707-8cc77767d783',
+      'name': 'Aniquilador',
+      'photo': 'https://i.imgur.com/TsMeC8m.jpeg',
       'description': 'Muito obediente e protetor, ideal para família.',
     },
     {
-      'name': 'Mel',
-      'photo': 'https://images.unsplash.com/photo-1560807707-8cc77767d783',
+      'name': 'Melzinha',
+      'photo': 'https://i.imgur.com/ZJUNyTh.png',
       'description': 'Doce e calma, se dá bem com outros pets.',
     },
   ];
@@ -118,57 +118,83 @@ class _PetCardState extends State<_PetCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 📸 FOTO GRANDE DO PET (sem cortes)
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Image.network(
               widget.photoUrl,
-              height: 220,
+              height: 300,
               width: double.infinity,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                height: 300,
+                color: Colors.grey[200],
+                alignment: Alignment.center,
+                child: const Icon(Icons.pets, size: 60, color: Colors.grey),
+              ),
             ),
           ),
+
+          // ❤️ ÍCONES DE INTERAÇÃO (CURTIR + ADOTAR)
           Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
               children: [
-                Text(widget.name,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
-                Text(widget.description,
-                    style: const TextStyle(color: Colors.black87)),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _liked ? Icons.favorite : Icons.favorite_border,
-                        color: _liked ? widget.pastelOrange : Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() => _liked = !_liked);
-                      },
+                IconButton(
+                  icon: Icon(
+                    _liked ? Icons.favorite : Icons.favorite_border,
+                    color: _liked ? widget.pastelOrange : Colors.grey[700],
+                    size: 28,
+                  ),
+                  onPressed: () => setState(() => _liked = !_liked),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.pastelBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: widget.pastelBlue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                  ),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Solicitação de adoção enviada para ${widget.name}!'),
                       ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Solicitação de adoção enviada para ${widget.name}!')),
-                        );
-                      },
-                      child: const Text('Adotar', style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                )
+                    );
+                  },
+                  icon: const Icon(Icons.pets, color: Colors.white, size: 18),
+                  label: const Text(
+                    'Adotar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
             ),
           ),
+
+          // 🐾 NOME E DESCRIÇÃO ABAIXO (tipo legenda do post)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.description,
+                  style: const TextStyle(color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
