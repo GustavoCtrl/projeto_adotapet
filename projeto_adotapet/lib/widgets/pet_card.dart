@@ -39,20 +39,22 @@ class _PetCardState extends State<PetCard> {
     bool _liked = favoritePets.any((pet) => pet['name'] == widget.name);
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PetDetailsPage(
-            name: widget.name,
-            description: widget.description,
-            photoUrl: widget.photoUrl,
-            pastelOrange: widget.pastelOrange,
-            pastelBlue: widget.pastelBlue,
-            shelterName: widget.shelterName,
-            age: widget.age,
-            breed: widget.breed,
-            size: widget.size,
-            sex: widget.sex,
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PetDetailsPage(
+              name: widget.name,
+              description: widget.description,
+              photoUrl: widget.photoUrl,
+              pastelOrange: widget.pastelOrange,
+              pastelBlue: widget.pastelBlue,
+              shelterName: widget.shelterName,
+              age: widget.age,
+              breed: widget.breed,
+              size: widget.size,
+              sex: widget.sex,
+            ),
           ),
-        ));
+        );
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -88,7 +90,9 @@ class _PetCardState extends State<PetCard> {
 
             // 📸 FOTO GRANDE
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(0)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(0),
+              ),
               child: Image.network(
                 widget.photoUrl,
                 height: 300,
@@ -115,12 +119,16 @@ class _PetCardState extends State<PetCard> {
                       IconButton(
                         icon: Icon(
                           _liked ? Icons.favorite : Icons.favorite_border,
-                          color: _liked ? widget.pastelOrange : widget.pastelOrange,
+                          color: _liked
+                              ? widget.pastelOrange
+                              : widget.pastelOrange,
                           size: 28,
                         ),
                         onPressed: () {
                           if (_liked) {
-                            favoritePets.removeWhere((pet) => pet['name'] == widget.name);
+                            favoritePets.removeWhere(
+                              (pet) => pet['name'] == widget.name,
+                            );
                           } else {
                             favoritePets.add({
                               'name': widget.name,
@@ -138,9 +146,11 @@ class _PetCardState extends State<PetCard> {
                           // Mostra uma mensagem de confirmação
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(_liked
-                                  ? '${widget.name} removido dos favoritos'
-                                  : '${widget.name} adicionado aos favoritos'),
+                              content: Text(
+                                _liked
+                                    ? '${widget.name} removido dos favoritos'
+                                    : '${widget.name} adicionado aos favoritos',
+                              ),
                               duration: const Duration(seconds: 1),
                             ),
                           );
@@ -148,7 +158,11 @@ class _PetCardState extends State<PetCard> {
                       ),
                       // 📤 COMPARTILHAR
                       IconButton(
-                        icon: Icon(Icons.share, color: widget.pastelOrange, size: 26),
+                        icon: Icon(
+                          Icons.share,
+                          color: widget.pastelOrange,
+                          size: 26,
+                        ),
                         onPressed: () {
                           Share.share(
                             '🐾 Olha só o ${widget.name}! ${widget.description}\nAdote também no AdotaPet 💕',
@@ -167,11 +181,18 @@ class _PetCardState extends State<PetCard> {
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Solicitação de adoção enviada para ${widget.name}!')),
+                        SnackBar(
+                          content: Text(
+                            'Solicitação de adoção enviada para ${widget.name}!',
+                          ),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.pets, color: Colors.white, size: 18),
-                    label: const Text('Adotar', style: TextStyle(color: Colors.white)),
+                    label: const Text(
+                      'Adotar',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -191,7 +212,10 @@ class _PetCardState extends State<PetCard> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(widget.description, style: const TextStyle(color: Colors.black87)),
+                  Text(
+                    widget.description,
+                    style: const TextStyle(color: Colors.black87),
+                  ),
                   const SizedBox(height: 10),
 
                   // 🏷️ CATEGORIAS (idade, raça, tamanho, sexo)
@@ -202,7 +226,12 @@ class _PetCardState extends State<PetCard> {
                       _buildChip('Idade: ${widget.age}', widget.pastelBlue),
                       _buildChip('Raça: ${widget.breed}', widget.pastelOrange),
                       _buildChip('Tamanho: ${widget.size}', Colors.teal),
-                      _buildChip('Sexo: ${widget.sex}', widget.sex == 'Fêmea' ? Colors.pinkAccent : Colors.lightBlue),
+                      _buildChip(
+                        'Sexo: ${widget.sex}',
+                        widget.sex == 'Fêmea'
+                            ? Colors.pinkAccent
+                            : Colors.lightBlue,
+                      ),
                     ],
                   ),
                 ],
