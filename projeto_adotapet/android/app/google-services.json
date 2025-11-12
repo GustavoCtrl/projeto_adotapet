@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "163350649839",
+    "project_id": "adotapet-e3060",
+    "storage_bucket": "adotapet-e3060.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163350649839:android:741dbb7f85c6a93f1a341a",
+        "android_client_info": {
+          "package_name": "com.example.projeto_adotapet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrfqtTXrmDtE4CgLinNu611gfw9-dol5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
