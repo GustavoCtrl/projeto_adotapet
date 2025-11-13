@@ -1,45 +1,52 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# Arquivos gerados pelo Dart e Flutter.
+.dart_tool/
+.packages
+.pub-cache/
+build/
 
-# IntelliJ related
+# Arquivo de lock de dependências. Geralmente é bom versionar em apps,
+# mas pode ser ignorado em pacotes. Para consistência de build,
+# é recomendado NÃO ignorar, mas se houver problemas, pode ser adicionado.
+# pubspec.lock
+
+# Arquivos de configuração de IDEs.
+.idea/
+.vscode/
 *.iml
 *.ipr
 *.iws
-.idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# Arquivos gerados pelo Android Studio/Gradle.
+android/app/build/
+android/build/
+android/.gradle/
+android/key.properties
+android/local.properties
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
+# Arquivos gerados pelo Xcode/CocoaPods.
+ios/build/
+ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/
 
-# Symbolication related
-app.*.symbols
+# Arquivos gerados para a plataforma Web.
+web/build/
 
-# Obfuscation related
-app.*.map.json
+# Arquivos gerados para a plataforma Windows.
+windows/build/
+windows/flutter/ephemeral/
+windows/runner/Debug/
+windows/runner/Profile/
+windows/runner/Release/
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Arquivos de log e diversos.
+*.log
+
+# ===================================================================
+# ARQUIVO MAIS IMPORTANTE A SER IGNORADO
+# Contém as chaves de API do Firebase. NUNCA envie para um repositório público.
+lib/firebase_options.dart
+# ===================================================================
