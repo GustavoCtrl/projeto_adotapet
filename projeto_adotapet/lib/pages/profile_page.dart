@@ -5,8 +5,15 @@ import '../utils/auth_helper.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? userRole; // 'adotante' ou 'ong' (apenas para admins)
+  final VoidCallback? onSwitchView; // Função para o admin trocar de visão
+  final String? currentAdminView; // Visão atual do admin
 
-  const ProfilePage({super.key, this.userRole});
+  const ProfilePage({
+    super.key,
+    this.userRole,
+    this.onSwitchView,
+    this.currentAdminView,
+  });
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -184,11 +191,29 @@ class _ProfilePageState extends State<ProfilePage> {
                       // Se for admin, mostrar opção de trocar role
                       if (isAdmin) ...[
                         const Divider(height: 32),
-                        _buildInfoCard(
-                          title: 'Painel de Administrador',
-                          value:
-                              'Você pode alternar entre os modos de visualização no login.',
-                          icon: Icons.admin_panel_settings,
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: widget.onSwitchView,
+                            icon: const Icon(Icons.switch_account),
+                            label: Text(
+                              widget.currentAdminView == 'adotante'
+                                  ? 'Mudar para Visão ONG'
+                                  : 'Mudar para Visão Adotante',
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Como administrador, você pode alternar entre as interfaces.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                       ],
 
