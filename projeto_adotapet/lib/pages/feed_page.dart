@@ -1,104 +1,132 @@
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../widgets/pet_card.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+  const FeedPage({Key? key}) : super(key: key);
 
   @override
   State<FeedPage> createState() => _FeedPageState();
 }
 
 class _FeedPageState extends State<FeedPage> {
-  final List<Map<String, String>> _allPets = [
-    {
-      'name': 'Andrews',
-      'photo': 'https://i.imgur.com/I1Zsu1m.jpeg',
-      'description': 'Carinhoso e brincalhão, ama correr no parque.',
-      'shelter': 'Abrigo São Cão',
-      'age': '2 anos',
-      'breed': 'SRD',
-      'size': 'Médio',
-      'sex': 'Macho',
-    },
-    {
-      'name': 'Aniquilador',
-      'photo': 'https://i.imgur.com/TsMeC8m.jpeg',
-      'description': 'Muito obediente e protetor, ideal para família.',
-      'shelter': 'Amigos dos Animais',
-      'age': '3 anos',
-      'breed': 'Pitbull',
-      'size': 'Grande',
-      'sex': 'Macho',
-    },
-    {
-      'name': 'Melzinha',
-      'photo': 'https://i.imgur.com/ZJUNyTh.png',
-      'description': 'Doce e calma, se dá bem com outros pets.',
-      'shelter': 'Lar Esperança',
-      'age': '1 ano',
-      'breed': 'Poodle',
-      'size': 'Pequeno',
-      'sex': 'Fêmea',
-    },
-  ];
-
   String _search = '';
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+
+  // Variáveis para paginação
+  final List<DocumentSnapshot> _pets = [];
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  DocumentSnapshot? _lastDocument;
+  final int _petsPerPage = 8;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _speech = stt.SpeechToText();
+    _scrollController = ScrollController();
+    _fetchInitialPets();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent * 0.9 &&
+          !_isLoadingMore) {
+        _fetchMorePets();
+      }
+    });
   }
 
-  Future<void> _listen() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize(
-        onStatus: (val) => debugPrint('STATUS: $val'),
-        onError: (val) => debugPrint('ERRO: $val'),
+  // Constrói a query base para pets
+  Query _buildBaseQuery() {
+    Query query = FirebaseFirestore.instance
+        .collection('pets')
+        .where('status', isEqualTo: 'disponivel');
+
+    if (_search.isNotEmpty) {
+      query = query.where(
+        'searchKeywords',
+        arrayContains: _search.trim().toLowerCase(),
       );
-      if (available) {
-        setState(() => _isListening = true);
-        _speech.listen(
-          localeId: 'pt_BR',
-          onResult: (val) {
-            setState(() {
-              _search = val.recognizedWords;
-              _searchController.text = _search;
-            });
-          },
-        );
+    }
+
+    return query.orderBy('cadastradoEm', descending: true);
+  }
+
+  // Busca os pets iniciais (ou reseta a busca)
+  Future<void> _fetchInitialPets() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoadingMore = true; // Mostra loading inicial
+      _pets.clear();
+      _hasMore = true;
+      _lastDocument = null;
+    });
+
+    try {
+      final query = _buildBaseQuery().limit(_petsPerPage);
+      final snapshot = await query.get();
+
+      if (mounted) {
+        setState(() {
+          _pets.addAll(snapshot.docs);
+          if (snapshot.docs.isNotEmpty) {
+            _lastDocument = snapshot.docs.last;
+          }
+          _hasMore = snapshot.docs.length == _petsPerPage;
+          _isLoadingMore = false;
+        });
       }
-    } else {
-      setState(() => _isListening = false);
-      _speech.stop();
+    } catch (e) {
+      // Tratar erro se necessário
+      if (mounted) setState(() => _isLoadingMore = false);
+    }
+  }
+
+  // Busca mais pets para a paginação
+  Future<void> _fetchMorePets() async {
+    if (_isLoadingMore || !_hasMore || _lastDocument == null) return;
+
+    if (mounted) setState(() => _isLoadingMore = true);
+
+    try {
+      final query = _buildBaseQuery()
+          .startAfterDocument(_lastDocument!)
+          .limit(_petsPerPage);
+      final snapshot = await query.get();
+
+      if (mounted) {
+        setState(() {
+          _pets.addAll(snapshot.docs);
+          if (snapshot.docs.isNotEmpty) {
+            _lastDocument = snapshot.docs.last;
+          }
+          _hasMore = snapshot.docs.length == _petsPerPage;
+          _isLoadingMore = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingMore = false);
     }
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    const pastelOrange = Color(0xFFFFB74D);
-    const pastelBlue = Color(0xFF64B5F6);
-
-    final filteredPets = _allPets.where((pet) {
-      final query = _search.toLowerCase();
-      return pet['name']!.toLowerCase().contains(query) ||
-          pet['shelter']!.toLowerCase().contains(query) ||
-          pet['breed']!.toLowerCase().contains(query) ||
-          pet['age']!.toLowerCase().contains(query) ||
-          pet['size']!.toLowerCase().contains(query) ||
-          pet['sex']!.toLowerCase().contains(query);
-    }).toList();
-
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: Container(
-          color: pastelBlue,
+          color: Theme.of(context).colorScheme.primary,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: SafeArea(
             child: Container(
@@ -108,7 +136,7 @@ class _FeedPageState extends State<FeedPage> {
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12.withOpacity(0.1),
+                    color: Colors.black12.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -119,43 +147,68 @@ class _FeedPageState extends State<FeedPage> {
                 decoration: InputDecoration(
                   hintText: 'Buscar pets, abrigo ou raça...',
                   hintStyle: const TextStyle(color: Colors.black54),
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF64B5F6)),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _isListening ? Icons.mic : Icons.mic_none,
-                      color: const Color(0xFF64B5F6),
-                    ),
-                    onPressed: _listen,
+                    icon: const Icon(Icons.clear, color: Colors.grey),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _search = '');
+                    },
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 ),
-                onChanged: (value) => setState(() => _search = value),
+                onChanged: (value) {
+                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                    setState(() {
+                      _search = value;
+                    });
+                    _fetchInitialPets(); // Reinicia a busca
+                  });
+                },
               ),
             ),
           ),
         ),
       ),
+      body: _pets.isEmpty && _isLoadingMore
+          ? const Center(child: CircularProgressIndicator())
+          : _pets.isEmpty
+          ? const Center(
+              child: Text(
+                'Nenhum pet encontrado.',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
+          : ListView.builder(
+              controller: _scrollController,
+              itemCount: _pets.length + (_hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == _pets.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
 
-      // 🐾 FEED
-      body: ListView.builder(
-        itemCount: filteredPets.length,
-        itemBuilder: (context, i) {
-          final pet = filteredPets[i];
-          return PetCard(
-            name: pet['name']!,
-            description: pet['description']!,
-            photoUrl: pet['photo']!,
-            pastelOrange: pastelOrange,
-            pastelBlue: pastelBlue,
-            shelterName: pet['shelter']!,
-            age: pet['age']!,
-            breed: pet['breed']!,
-            size: pet['size']!,
-            sex: pet['sex']!,
-          );
-        },
-      ),
+                final data = _pets[index].data() as Map<String, dynamic>;
+                return PetCard(
+                  name: (data['nome'] ?? '').toString(),
+                  description: (data['descricao'] ?? '').toString(),
+                  photoUrl: (data['imagemUrl'] ?? '').toString(),
+                  shelterName: (data['nomeOng'] ?? '').toString(),
+                  age: (data['idade'] ?? '').toString(),
+                  breed: (data['raca'] ?? '').toString(),
+                  size: (data['porte'] ?? '').toString(),
+                  sex: (data['sexo'] ?? '').toString(),
+                  especie: (data['especie'] ?? '').toString(),
+                  pelagem: (data['pelagem'] ?? '').toString(),
+                  pastelOrange: const Color(0xFFFFB74D),
+                  pastelBlue: const Color(0xFF64B5F6),
+                );
+              },
+            ),
     );
   }
 }

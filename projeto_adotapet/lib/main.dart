@@ -25,7 +25,14 @@ class AdotaPetApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AdotaPet',
-      theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          primary: Colors.teal, // Cor principal para AppBars, botões
+          secondary: const Color(0xFFFFB74D), // Cor de destaque (laranja)
+        ),
+        useMaterial3: true,
+      ),
       home: const AuthGate(),
     );
   }

@@ -13,6 +13,8 @@ class PetDetailsPage extends StatefulWidget {
   final String breed;
   final String size;
   final String sex;
+  final String especie;
+  final String pelagem;
 
   const PetDetailsPage({
     super.key,
@@ -26,6 +28,8 @@ class PetDetailsPage extends StatefulWidget {
     required this.breed,
     required this.size,
     required this.sex,
+    this.especie = '',
+    this.pelagem = '',
   });
 
   @override
@@ -127,6 +131,13 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     children: [
                       _buildChip('Idade: ${widget.age}', widget.pastelBlue),
                       _buildChip('Raça: ${widget.breed}', widget.pastelOrange),
+                      if (widget.especie.isNotEmpty)
+                        _buildChip(
+                          'Espécie: ${widget.especie}',
+                          Colors.deepPurple,
+                        ),
+                      if (widget.pelagem.isNotEmpty)
+                        _buildChip('Pelagem: ${widget.pelagem}', Colors.brown),
                       _buildChip('Tamanho: ${widget.size}', Colors.teal),
                       _buildChip(
                         'Sexo: ${widget.sex}',

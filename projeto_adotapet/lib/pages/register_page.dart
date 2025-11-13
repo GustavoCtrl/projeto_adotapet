@@ -18,6 +18,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  // Campos específicos para ONG
+  final _nomeOngController = TextEditingController();
+  final _nomeAdministradorController = TextEditingController();
+  final _enderecoController = TextEditingController();
 
   // Variável para guardar o tipo de usuário selecionado
   UserType _selectedUserType = UserType.adotante;
@@ -34,6 +38,9 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nomeOngController.dispose();
+    _nomeAdministradorController.dispose();
+    _enderecoController.dispose();
     super.dispose();
   }
 
@@ -44,6 +51,16 @@ class _RegisterPageState extends State<RegisterPage> {
         _confirmPasswordController.text.trim()) {
       _showErrorDialog("As senhas não coincidem.");
       return;
+    }
+
+    // Validação extra se for um abrigo
+    if (_selectedUserType == UserType.abrigo) {
+      if (_nomeOngController.text.trim().isEmpty ||
+          _nomeAdministradorController.text.trim().isEmpty ||
+          _enderecoController.text.trim().isEmpty) {
+        _showErrorDialog("Para abrigos, todos os campos são obrigatórios.");
+        return;
+      }
     }
 
     // 2. Mostrar indicador de loading
@@ -67,13 +84,27 @@ class _RegisterPageState extends State<RegisterPage> {
             : 'abrigo';
 
         // Criamos um 'documento' na coleção 'usuarios' com o ID do usuário
-        await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
+        final userDoc = <String, dynamic>{
           'email': _emailController.text.trim(),
           'tipoUsuario': userTypeString,
           'uid': uid,
           'isAdmin': _isAdmin, // Campo de administrador
           'criadoEm': Timestamp.now(),
-        });
+        };
+
+        // Se for abrigo, adiciona informações específicas da ONG
+        if (_selectedUserType == UserType.abrigo) {
+          userDoc.addAll({
+            'nomeOng': _nomeOngController.text.trim(),
+            'nomeAdministrador': _nomeAdministradorController.text.trim(),
+            'endereco': _enderecoController.text.trim(),
+          });
+        }
+
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(uid)
+            .set(userDoc);
       }
 
       // 5. Parar o loading (se o widget ainda estiver montado)
@@ -276,25 +307,43 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 15),
 
-                // Checkbox para Administrador
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(12),
+                // Campos específicos para ONG (aparecem somente quando selecionado Abrigo)
+                if (_selectedUserType == UserType.abrigo) ...[
+                  TextField(
+                    controller: _nomeOngController,
+                    decoration: InputDecoration(
+                      labelText: 'Nome da ONG',
+                      prefixIcon: const Icon(Icons.business),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                  child: CheckboxListTile(
-                    title: const Text('Marcar como administrador'),
-                    subtitle: const Text('Para testes e gerenciamento do app'),
-                    value: _isAdmin,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _isAdmin = value ?? false;
-                      });
-                    },
-                    activeColor: Colors.teal,
-                    dense: true,
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _nomeAdministradorController,
+                    decoration: InputDecoration(
+                      labelText: 'Nome do Administrador',
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _enderecoController,
+                    decoration: InputDecoration(
+                      labelText: 'Endereço',
+                      prefixIcon: const Icon(Icons.location_on),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                ],
+
                 const SizedBox(height: 30),
 
                 // Botão de Cadastrar

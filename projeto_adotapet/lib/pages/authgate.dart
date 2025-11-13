@@ -22,23 +22,29 @@ class _AuthGateState extends State<AuthGate> {
         builder: (context, snapshot) {
           // Se o usuário está logado
           if (snapshot.hasData) {
-            // Se é um usuário admin, mostrar seleção de papel
-            return FutureBuilder<bool>(
-              future: AuthHelper.isCurrentUserAdmin(),
-              builder: (context, adminSnapshot) {
-                if (adminSnapshot.connectionState == ConnectionState.waiting) {
+            // Busca os dados do usuário para verificar se é admin ou qual seu tipo
+            return FutureBuilder<Map<String, dynamic>?>(
+              future: AuthHelper.getCurrentUserData(),
+              builder: (context, userSnapshot) {
+                if (userSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                bool isAdmin = adminSnapshot.data ?? false;
+                final userData = userSnapshot.data;
+                final bool isAdmin = userData?['isAdmin'] ?? false;
+                final String userType = userData?['tipoUsuario'] ?? 'adotante';
 
                 // Se é admin, mostrar seleção de papel
                 if (isAdmin && _selectedRole == null) {
                   return _buildRoleSelector(context);
                 }
 
-                // Caso contrário, mostrar HomePage normalmente
-                return HomePage(userRole: _selectedRole ?? 'adotante');
+                // Se for admin, usa o papel selecionado.
+                // Se não for admin, usa o tipo de usuário do banco de dados.
+                final role = isAdmin ? _selectedRole : userType;
+
+                // Mostra a HomePage com o papel correto
+                return HomePage(userRole: role ?? 'adotante');
               },
             );
           }
@@ -99,14 +105,13 @@ class _AuthGateState extends State<AuthGate> {
               ),
             ),
             const SizedBox(height: 40),
-            // Botão para mudar papel
-            TextButton(
+            // Botão para fazer logout
+            TextButton.icon(
               onPressed: () {
-                setState(() {
-                  _selectedRole = null;
-                });
+                AuthHelper.logout();
               },
-              child: const Text('Trocar de Papel'),
+              icon: const Icon(Icons.logout),
+              label: const Text('Sair (Logout)'),
             ),
           ],
         ),

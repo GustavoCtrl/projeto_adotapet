@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'feed_page.dart';
 import 'favorites_page.dart';
 import 'profile_page.dart';
+import 'manage_pets_page.dart';
 import '../utils/auth_helper.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,19 +19,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Se for admin, mostrar painel admin
+    // Se for admin, mostra o painel de gerenciamento geral
     if (widget.userRole == 'admin') {
       return _buildAdminInterface();
     }
 
-    // Caso contrário, mostrar interface de adotante
+    // Se for um abrigo/ong, mostra a interface com gerenciamento de pets
+    if (widget.userRole == 'abrigo') {
+      return _buildOngInterface();
+    }
+
+    // Por padrão, mostra a interface de adotante
     return _buildAdoptantInterface();
   }
 
   Widget _buildAdoptantInterface() {
     const pastelOrange = Color(0xFFFFB74D);
 
-    final pages = const [FeedPage(), FavoritesPage(), ProfilePage()];
+    final pages = [
+      const FeedPage(),
+      const FavoritesPage(),
+      ProfilePage(userRole: widget.userRole),
+    ];
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -49,6 +59,38 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Favoritos',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOngInterface() {
+    const pastelBlue = Color(0xFF64B5F6);
+
+    final pages = [
+      const FeedPage(),
+      const ManagePetsPage(), // << PÁGINA DE GERENCIAMENTO AQUI
+      ProfilePage(userRole: widget.userRole),
+    ];
+
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: pages[_selectedIndex],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: pastelBlue,
+        unselectedItemColor: Colors.grey,
+        onTap: (i) => setState(() => _selectedIndex = i),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Feed'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pets),
+            label: 'Meus Pets', // << TEXTO DO BOTÃO ALTERADO
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
@@ -91,9 +133,11 @@ class _HomePageState extends State<HomePage> {
               title: 'Gerenciar Pets',
               description: 'Adicionar, editar ou remover animais',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Gerenciar Pets - Em desenvolvimento'),
+                // Abrir a página de cadastro de pet (ou gerenciamento)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManagePetsPage(),
                   ),
                 );
               },
