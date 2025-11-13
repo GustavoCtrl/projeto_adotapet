@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../pages/home_page.dart'; // Seus imports
+import 'pages/authgate.dart'; // Import do AuthGate para gerenciar auth
 import 'package:firebase_core/firebase_core.dart'; // Import do Firebase
 import 'firebase_options.dart'; // Import do arquivo de configuração
 
@@ -10,9 +10,7 @@ void main() async {
 
   // 2. INICIALIZA o Firebase.
   //    Usa o 'await' para esperar a conexão antes de continuar.
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 3. RODA o seu App.
   //    Esta linha DEVE ser a última.
@@ -27,11 +25,8 @@ class AdotaPetApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AdotaPet',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        useMaterial3: true,
-      ),
-      home: const HomePage(),
+      theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
+      home: const AuthGate(),
     );
   }
 }
