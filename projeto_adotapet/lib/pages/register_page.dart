@@ -22,6 +22,9 @@ class _RegisterPageState extends State<RegisterPage> {
   // Variável para guardar o tipo de usuário selecionado
   UserType _selectedUserType = UserType.adotante;
 
+  // Variável para marcar como admin
+  bool _isAdmin = false;
+
   // Variável para controlar o estado de loading
   bool _isLoading = false;
 
@@ -68,6 +71,7 @@ class _RegisterPageState extends State<RegisterPage> {
           'email': _emailController.text.trim(),
           'tipoUsuario': userTypeString,
           'uid': uid,
+          'isAdmin': _isAdmin, // Campo de administrador
           'criadoEm': Timestamp.now(),
         });
       }
@@ -268,6 +272,27 @@ class _RegisterPageState extends State<RegisterPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+
+                // Checkbox para Administrador
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: CheckboxListTile(
+                    title: const Text('Marcar como administrador'),
+                    subtitle: const Text('Para testes e gerenciamento do app'),
+                    value: _isAdmin,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isAdmin = value ?? false;
+                      });
+                    },
+                    activeColor: Colors.teal,
+                    dense: true,
                   ),
                 ),
                 const SizedBox(height: 30),
