@@ -15,8 +15,6 @@ class AddPetPage extends StatefulWidget {
 class _AddPetPageState extends State<AddPetPage> {
   // Controladores para o formulário
   final _nameController = TextEditingController();
-  final _idadeController = TextEditingController();
-  final _racaController = TextEditingController();
   final _descricaoController = TextEditingController();
 
   // Variável para guardar o arquivo da imagem selecionada
@@ -33,6 +31,26 @@ class _AddPetPageState extends State<AddPetPage> {
   // Lista de pelagens e valor selecionado
   final List<String> _pelagens = ['Curto', 'Médio', 'Longo', 'Sem Pelo'];
   String? _selectedPelagem;
+
+  // Lista de idades e valor selecionado
+  final List<String> _idades = [
+    'Filhote (até 1 ano)',
+    'Adulto (1 a 7 anos)',
+    'Idoso (acima de 7 anos)',
+  ];
+  String? _selectedIdade;
+
+  // Lista de raças (simplificada) e valor selecionado
+  final List<String> _racas = [
+    'SRD (Sem Raça Definida)',
+    'Poodle',
+    'Labrador',
+    'Golden Retriever',
+    'Siamês',
+    'Persa',
+    'Outra',
+  ];
+  String? _selectedRaca;
 
   // Variável para guardar o sexo selecionado
   String? _selectedSex;
@@ -62,10 +80,10 @@ class _AddPetPageState extends State<AddPetPage> {
     // 1. Validar se os campos estão preenchidos e uma imagem foi selecionada
     if (_nameController.text.isEmpty ||
         _selectedEspecie == null ||
-        _racaController.text.isEmpty ||
+        _selectedRaca == null ||
         _selectedPorte == null ||
         _selectedPelagem == null ||
-        _idadeController.text.isEmpty ||
+        _selectedIdade == null ||
         _selectedSex == null ||
         _descricaoController.text.isEmpty) {
       _showErrorDialog("Por favor, preencha todos os campos do formulário.");
@@ -109,7 +127,7 @@ class _AddPetPageState extends State<AddPetPage> {
       // 7. Criar o array de palavras-chave para a busca
       final nome = _nameController.text.trim().toLowerCase();
       final especie = _selectedEspecie!.toLowerCase();
-      final raca = _racaController.text.trim().toLowerCase();
+      final raca = _selectedRaca!.toLowerCase();
       final porte = _selectedPorte!.toLowerCase();
 
       // Gera um conjunto de palavras-chave únicas
@@ -124,10 +142,10 @@ class _AddPetPageState extends State<AddPetPage> {
       await FirebaseFirestore.instance.collection('pets').add({
         'nome': _nameController.text.trim(),
         'especie': _selectedEspecie,
-        'raca': _racaController.text.trim(),
+        'raca': _selectedRaca,
         'porte': _selectedPorte,
         'pelagem': _selectedPelagem,
-        'idade': _idadeController.text.trim(),
+        'idade': _selectedIdade,
         'sexo': _selectedSex, // Adiciona o sexo do pet
         'descricao': _descricaoController.text.trim(),
         'imagemUrl': downloadUrl, // A URL da imagem que acabamos de subir
@@ -242,10 +260,18 @@ class _AddPetPageState extends State<AddPetPage> {
               decoration: _inputDecoration('Nome do Pet'),
             ),
             const SizedBox(height: 15),
-            // Raça
-            TextField(
-              controller: _racaController,
+            // Seleção de Raça
+            DropdownButtonFormField<String>(
               decoration: _inputDecoration('Raça'),
+              value: _selectedRaca,
+              hint: const Text('Selecione a raça'),
+              items: _racas.map((String raca) {
+                return DropdownMenuItem<String>(value: raca, child: Text(raca));
+              }).toList(),
+              onChanged: (newValue) {
+                setState(() => _selectedRaca = newValue);
+              },
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
             ),
             const SizedBox(height: 15),
             // Seleção de Porte
@@ -282,9 +308,21 @@ class _AddPetPageState extends State<AddPetPage> {
               validator: (value) => value == null ? 'Campo obrigatório' : null,
             ),
             const SizedBox(height: 15),
-            TextField(
-              controller: _idadeController,
-              decoration: _inputDecoration('Idade (Ex: 2 anos)'),
+            // Seleção de Idade
+            DropdownButtonFormField<String>(
+              decoration: _inputDecoration('Faixa de Idade'),
+              value: _selectedIdade,
+              hint: const Text('Selecione a faixa de idade'),
+              items: _idades.map((String idade) {
+                return DropdownMenuItem<String>(
+                  value: idade,
+                  child: Text(idade),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                setState(() => _selectedIdade = newValue);
+              },
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
             ),
             const SizedBox(height: 15),
 
@@ -374,8 +412,6 @@ class _AddPetPageState extends State<AddPetPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _idadeController.dispose();
-    _racaController.dispose();
     _descricaoController.dispose();
     super.dispose();
   }
