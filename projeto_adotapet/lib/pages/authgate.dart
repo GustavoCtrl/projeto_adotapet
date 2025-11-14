@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/auth_helper.dart';
 import 'home_page.dart';
 import 'login_or_register_page.dart';
-
+import '../widgets/pet_load.dart';
 class AuthGate extends StatefulWidget {
   const AuthGate({Key? key}) : super(key: key);
 
@@ -25,7 +25,7 @@ class _AuthGateState extends State<AuthGate> {
               future: AuthHelper.getCurrentUserData(),
               builder: (context, userSnapshot) {
                 if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: PetLoader());
                 }
 
                 final userData = userSnapshot.data;

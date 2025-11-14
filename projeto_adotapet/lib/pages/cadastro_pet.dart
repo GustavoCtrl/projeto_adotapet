@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import '../widgets/pet_load.dart';
 class AddPetPage extends StatefulWidget {
   const AddPetPage({Key? key}) : super(key: key);
 
@@ -377,7 +377,7 @@ class _AddPetPageState extends State<AddPetPage> {
 
             // Botão de Salvar
             _isLoading
-                ? const CircularProgressIndicator()
+                ? const PetLoader()
                 : SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(

@@ -3,7 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'cadastro_pet.dart';
-
+import '../widgets/pet_load.dart';
 class ManagePetsPage extends StatefulWidget {
   const ManagePetsPage({Key? key}) : super(key: key);
 
@@ -102,7 +102,7 @@ class _ManagePetsPageState extends State<ManagePetsPage> {
         stream: petsQuery.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: PetLoader());
           }
 
           if (snapshot.hasError) {

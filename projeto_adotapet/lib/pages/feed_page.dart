@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../widgets/pet_card.dart';
-
+import '../widgets/pet_load.dart';
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -173,7 +173,7 @@ class _FeedPageState extends State<FeedPage> {
         ),
       ),
       body: _pets.isEmpty && _isLoadingMore
-          ? const Center(child: CircularProgressIndicator())
+    ? const Center(child: PetLoader())
           : _pets.isEmpty
           ? const Center(
               child: Text(

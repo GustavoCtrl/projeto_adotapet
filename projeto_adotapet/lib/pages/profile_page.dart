@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/auth_helper.dart';
-
+import '../widgets/pet_load.dart';
 class ProfilePage extends StatefulWidget {
   final String? userRole; // 'adotante' ou 'ong' (apenas para admins)
   final VoidCallback? onSwitchView; // Função para o admin trocar de visão
@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
         future: _userDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: PetLoader());
           }
 
           if (!snapshot.hasData || snapshot.data == null) {
