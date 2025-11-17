@@ -229,9 +229,9 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Text(
                 formData?['motivo'] ?? 'N/A',
@@ -271,9 +271,13 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red[50],
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red[300]!),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                     child: Text(
                       widget.requestData['rejectionReason'],
@@ -351,9 +355,9 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
+            color: Theme.of(context).hintColor,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -362,9 +366,9 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Text(
             value,

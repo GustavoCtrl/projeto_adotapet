@@ -70,11 +70,18 @@ class _MyAdoptionsPageState extends State<MyAdoptionsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.pets, size: 80, color: Colors.grey[300]),
+                  Icon(
+                    Icons.pets,
+                    size: 80,
+                    color: Theme.of(context).hintColor,
+                  ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Nenhuma solicitação de adoção ainda',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
                 ],
               ),
@@ -135,7 +142,7 @@ class _MyAdoptionsPageState extends State<MyAdoptionsPage> {
                                     ongName,
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: Colors.grey[600],
+                                      color: Theme.of(context).hintColor,
                                     ),
                                   ),
                                 ],
@@ -172,14 +179,14 @@ class _MyAdoptionsPageState extends State<MyAdoptionsPage> {
                             Icon(
                               Icons.calendar_today,
                               size: 14,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).hintColor,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               formattedDate,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: Theme.of(context).hintColor,
                               ),
                             ),
                           ],

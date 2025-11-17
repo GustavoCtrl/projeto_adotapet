@@ -120,25 +120,25 @@ class _AdminDashboardState extends State<AdminDashboard> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            _buildRecentRequestsList(),
+            _buildRecentRequestsList(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRecentRequestsList() {
+  Widget _buildRecentRequestsList(BuildContext context) {
     final ongId = _getOngId();
     if (ongId == null) {
       return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Text(
+        child: Text(
           'Usuário não autenticado',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: Theme.of(context).hintColor),
           textAlign: TextAlign.center,
         ),
       );
@@ -160,12 +160,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
           return Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
+            child: Text(
               'Nenhuma solicitação pendente',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).hintColor),
               textAlign: TextAlign.center,
             ),
           );

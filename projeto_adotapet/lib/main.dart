@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-import 'pages/authgate.dart'; // Import do AuthGate para gerenciar auth
-import 'package:firebase_core/firebase_core.dart'; // Import do Firebase
-import 'firebase_options.dart'; // Import do arquivo de configuração
+import 'pages/authgate.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+final themeNotifier = ValueNotifier<bool>(false);
 
 void main() async {
-  // 1. GARANTE que o Flutter está pronto ANTES de tudo.
-  //    Esta linha DEVE ser a primeira.
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 2. INICIALIZA o Firebase.
-  //    Usa o 'await' para esperar a conexão antes de continuar.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // 3. RODA o seu App.
-  //    Esta linha DEVE ser a última.
   runApp(const AdotaPetApp());
 }
 
@@ -22,18 +16,34 @@ class AdotaPetApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'AdotaPet',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          primary: Colors.teal, // Cor principal para AppBars, botões
-          secondary: const Color(0xFFFFB74D), // Cor de destaque (laranja)
-        ),
-        useMaterial3: true,
-      ),
-      home: const AuthGate(),
+    return ValueListenableBuilder<bool>(
+      valueListenable: themeNotifier,
+      builder: (context, isDarkMode, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'AdotaPet',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.teal,
+              primary: Colors.teal,
+              secondary: const Color(0xFFFFB74D),
+              brightness: Brightness.light,
+            ),
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.teal,
+              primary: Colors.teal,
+              secondary: const Color(0xFFFFB74D),
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
+          ),
+          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: const AuthGate(),
+        );
+      },
     );
   }
 }

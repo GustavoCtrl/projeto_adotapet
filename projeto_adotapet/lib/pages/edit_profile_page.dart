@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final Map<String, dynamic> userData;
+  final Map<String, dynamic>? userData;
 
-  const EditProfilePage({super.key, required this.userData});
+  const EditProfilePage({super.key, this.userData});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -14,13 +14,45 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _nomeController;
   bool _isLoading = false;
+  String? _userEmail;
 
   @override
   void initState() {
     super.initState();
-    _nomeController = TextEditingController(
-      text: widget.userData['nomeUsuario'] ?? '',
-    );
+    if (widget.userData != null) {
+      _nomeController = TextEditingController(
+        text: widget.userData!['nomeUsuario'] ?? '',
+      );
+      _userEmail = widget.userData!['email'];
+    } else {
+      _nomeController = TextEditingController();
+      _loadUserData();
+    }
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final doc = await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(user.uid)
+            .get();
+
+        if (mounted) {
+          setState(() {
+            _nomeController.text = doc['nomeUsuario'] ?? '';
+            _userEmail = doc['email'] ?? user.email;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao carregar dados: $e')));
+      }
+    }
   }
 
   @override
@@ -146,7 +178,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  initialValue: widget.userData['email'] ?? '',
+                  initialValue: _userEmail ?? 'Carregando...',
                   enabled: false,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email),
@@ -154,7 +186,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: Theme.of(context).cardColor,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,

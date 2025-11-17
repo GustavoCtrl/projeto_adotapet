@@ -167,9 +167,12 @@ class _EditPetPageState extends State<EditPetPage> {
                 height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey, width: 2),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor,
+                    width: 2,
+                  ),
                 ),
                 child: _selectedImage != null
                     ? ClipRRect(
@@ -184,10 +187,10 @@ class _EditPetPageState extends State<EditPetPage> {
                           fit: BoxFit.cover,
                         ),
                       )
-                    : const Icon(
+                    : Icon(
                         Icons.camera_alt,
                         size: 60,
-                        color: Colors.grey,
+                        color: Theme.of(context).hintColor,
                       ),
               ),
             ),
@@ -196,7 +199,10 @@ class _EditPetPageState extends State<EditPetPage> {
               _selectedImage != null
                   ? 'Nova imagem selecionada'
                   : 'Toque para alterar imagem',
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).hintColor,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 20),
 

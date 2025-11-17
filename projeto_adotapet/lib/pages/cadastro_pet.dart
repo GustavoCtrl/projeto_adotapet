@@ -211,20 +211,20 @@ class _AddPetPageState extends State<AddPetPage> {
                 height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: _selectedImage != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.file(_selectedImage!, fit: BoxFit.cover),
                       )
-                    : const Center(
+                    : Center(
                         child: Icon(
                           Icons.camera_alt,
                           size: 60,
-                          color: Colors.grey,
+                          color: Theme.of(context).hintColor,
                         ),
                       ),
               ),
@@ -232,7 +232,7 @@ class _AddPetPageState extends State<AddPetPage> {
             const SizedBox(height: 10),
             Text(
               'Clique no ícone para adicionar uma foto',
-              style: TextStyle(color: Colors.grey[700]),
+              style: TextStyle(color: Theme.of(context).hintColor),
             ),
             const SizedBox(height: 30),
 
@@ -337,11 +337,16 @@ class _AddPetPageState extends State<AddPetPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 12.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0),
                     child: Text(
                       'Sexo',
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                      style: TextStyle(
+                        color:
+                            Theme.of(context).textTheme.bodyMedium?.color ??
+                            Colors.black54,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   Row(

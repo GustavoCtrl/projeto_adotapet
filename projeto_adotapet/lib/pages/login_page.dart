@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -76,12 +76,17 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color:
+                        Theme.of(context).textTheme.headlineLarge?.color ??
+                        Colors.grey[800],
                   ),
                 ),
                 Text(
                   'Faça login no AdotaPet',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(context).hintColor,
+                  ),
                 ),
                 const SizedBox(height: 40),
 

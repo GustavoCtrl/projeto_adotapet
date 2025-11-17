@@ -300,9 +300,9 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
+            color: Theme.of(context).hintColor,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -311,9 +311,9 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Text(
             value,
@@ -334,9 +334,9 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
+            color: Theme.of(context).hintColor,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -347,7 +347,9 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             filled: !enabled,
-            fillColor: !enabled ? Colors.grey[100] : Colors.white,
+            fillColor: !enabled
+                ? Theme.of(context).cardColor
+                : Colors.transparent,
           ),
         ),
       ],
@@ -364,9 +366,9 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
+            color: Theme.of(context).hintColor,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -378,12 +380,16 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             filled: !enabled,
-            fillColor: !enabled ? Colors.grey[100] : Colors.white,
+            fillColor: !enabled
+                ? Theme.of(context).cardColor
+                : Colors.transparent,
           ),
         ),
       ],
     );
   }
+
+  BuildContext get context => super.context;
 
   String _formatDate(Timestamp? timestamp) {
     if (timestamp == null) return 'N/A';

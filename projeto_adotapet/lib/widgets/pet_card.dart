@@ -270,8 +270,10 @@ class _PetCardState extends State<PetCard> {
                   // Descrição
                   Text(
                     widget.description,
-                    style: const TextStyle(
-                      color: Colors.black87,
+                    style: TextStyle(
+                      color:
+                          Theme.of(context).textTheme.bodyMedium?.color ??
+                          Colors.black87,
                       fontSize: 13,
                       height: 1.4,
                     ),

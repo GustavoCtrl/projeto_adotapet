@@ -166,7 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -182,7 +182,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color:
+                        Theme.of(context).textTheme.headlineLarge?.color ??
+                        Colors.grey[800],
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -190,7 +192,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Seleção de Tipo de Usuário (MUITO IMPORTANTE)
                 Text(
                   'Eu sou...',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:
+                        Theme.of(context).textTheme.bodyMedium?.color ??
+                        Colors.grey[700],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Row(

@@ -123,7 +123,7 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: Container(
@@ -133,7 +133,7 @@ class _FeedPageState extends State<FeedPage> {
             child: Container(
               height: 42,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
@@ -147,10 +147,13 @@ class _FeedPageState extends State<FeedPage> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Buscar pets, abrigo ou raça...',
-                  hintStyle: const TextStyle(color: Colors.black54),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).hintColor,
+                  ),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.grey),
+                    icon: Icon(Icons.clear, color: Theme.of(context).hintColor),
                     onPressed: () {
                       _searchController.clear();
                       setState(() => _search = '');
@@ -176,10 +179,13 @@ class _FeedPageState extends State<FeedPage> {
       body: _pets.isEmpty && _isLoadingMore
           ? const Center(child: PetLoader())
           : _pets.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
                 'Nenhum pet encontrado.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).hintColor,
+                ),
               ),
             )
           : ListView.builder(

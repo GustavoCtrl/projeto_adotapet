@@ -3,6 +3,8 @@ import '../utils/auth_helper.dart';
 import '../widgets/pet_load.dart';
 import 'my_adoptions_page.dart';
 import 'edit_profile_page.dart';
+import 'settings_page.dart';
+import '../main.dart' as main;
 
 class ProfilePage extends StatefulWidget {
   final String? userRole;
@@ -192,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: Column(
                     children: [
@@ -208,21 +210,27 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         },
                       ),
-                      Divider(height: 0, color: Colors.grey[300]),
+                      Divider(height: 0, color: Theme.of(context).dividerColor),
 
                       // Configurações
                       _buildMenuTile(
                         icon: Icons.settings,
                         title: 'Configurações',
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Configurações em breve!'),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SettingsPage(
+                                isDarkMode: main.themeNotifier.value,
+                                onThemeChanged: (isDark) {
+                                  main.themeNotifier.value = isDark;
+                                },
+                              ),
                             ),
                           );
                         },
                       ),
-                      Divider(height: 0, color: Colors.grey[300]),
+                      Divider(height: 0, color: Theme.of(context).dividerColor),
 
                       // Logout
                       _buildMenuTile(
@@ -275,12 +283,26 @@ class _ProfilePageState extends State<ProfilePage> {
     Color color = Colors.black87,
   }) {
     return ListTile(
-      leading: Icon(icon, color: color),
+      leading: Icon(
+        icon,
+        color: color != Colors.black87
+            ? color
+            : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
+      ),
       title: Text(
         title,
-        style: TextStyle(color: color, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          color: color != Colors.black87
+              ? color
+              : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
+          fontWeight: FontWeight.w500,
+        ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Theme.of(context).hintColor,
+      ),
       onTap: onTap,
     );
   }
