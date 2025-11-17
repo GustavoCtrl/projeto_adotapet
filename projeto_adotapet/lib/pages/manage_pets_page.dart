@@ -3,7 +3,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'cadastro_pet.dart';
+import 'edit_pet_page.dart';
 import '../widgets/pet_load.dart';
+
 class ManagePetsPage extends StatefulWidget {
   const ManagePetsPage({Key? key}) : super(key: key);
 
@@ -146,9 +148,11 @@ class _ManagePetsPageState extends State<ManagePetsPage> {
                         await _confirmAndDelete(context, doc);
                       } else if (value == 'edit') {
                         if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Editar - em desenvolvimento'),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                EditPetPage(petId: doc.id, petData: data),
                           ),
                         );
                       }

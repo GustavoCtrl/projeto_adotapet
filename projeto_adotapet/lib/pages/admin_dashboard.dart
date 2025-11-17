@@ -11,71 +11,60 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  late String _ongId;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _initOngId();
-  }
-
-  Future<void> _initOngId() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        setState(() {
-          _ongId = user.uid;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() => _isLoading = false);
-    }
+  String? _getOngId() {
+    return FirebaseAuth.instance.currentUser?.uid;
   }
 
   Stream<int> _getPendingRequestsCount() {
+    final ongId = _getOngId();
+    if (ongId == null) return Stream.value(0);
     return FirebaseFirestore.instance
         .collection('adoption_requests')
-        .where('ongId', isEqualTo: _ongId)
+        .where('ongId', isEqualTo: ongId)
         .where('status', isEqualTo: 'pendente')
         .snapshots()
-        .map((snapshot) => snapshot.docs.length);
+        .map((snapshot) => snapshot.docs.length)
+        .asBroadcastStream();
   }
 
   Stream<int> _getApprovedRequestsCount() {
+    final ongId = _getOngId();
+    if (ongId == null) return Stream.value(0);
     return FirebaseFirestore.instance
         .collection('adoption_requests')
-        .where('ongId', isEqualTo: _ongId)
+        .where('ongId', isEqualTo: ongId)
         .where('status', isEqualTo: 'aprovado')
         .snapshots()
-        .map((snapshot) => snapshot.docs.length);
+        .map((snapshot) => snapshot.docs.length)
+        .asBroadcastStream();
   }
 
   Stream<int> _getRejectedRequestsCount() {
+    final ongId = _getOngId();
+    if (ongId == null) return Stream.value(0);
     return FirebaseFirestore.instance
         .collection('adoption_requests')
-        .where('ongId', isEqualTo: _ongId)
+        .where('ongId', isEqualTo: ongId)
         .where('status', isEqualTo: 'rejeitado')
         .snapshots()
-        .map((snapshot) => snapshot.docs.length);
+        .map((snapshot) => snapshot.docs.length)
+        .asBroadcastStream();
   }
 
   Stream<int> _getAvailablePetsCount() {
+    final ongId = _getOngId();
+    if (ongId == null) return Stream.value(0);
     return FirebaseFirestore.instance
         .collection('pets')
-        .where('abrigoId', isEqualTo: _ongId)
+        .where('abrigoId', isEqualTo: ongId)
         .where('status', isEqualTo: 'disponivel')
         .snapshots()
-        .map((snapshot) => snapshot.docs.length);
+        .map((snapshot) => snapshot.docs.length)
+        .asBroadcastStream();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard da ONG'),
@@ -86,14 +75,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             const Text(
               '📊 Dashboard de Adoções',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
-            // Estatísticas em Grid
             GridView.count(
               crossAxisCount: 2,
               crossAxisSpacing: 12,
@@ -129,89 +115,112 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // Seção de Solicitações Recentes
             const Text(
               '📋 Solicitações Recentes',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-
-            StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('adoption_requests')
-                  .where('ongId', isEqualTo: _ongId)
-                  .where('status', isEqualTo: 'pendente')
-                  .orderBy('requestDate', descending: true)
-                  .limit(5)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      'Nenhuma solicitação pendente',
-                      style: TextStyle(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
-
-                final requests = snapshot.data!.docs;
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: requests.length,
-                  itemBuilder: (context, index) {
-                    final data = requests[index].data() as Map<String, dynamic>;
-                    final requestId = requests[index].id;
-                    final petName = data['petName'] ?? 'Pet desconhecido';
-                    final adotanteEmail = data['adotanteEmail'] ?? 'N/A';
-                    final requestDate = (data['requestDate'] as Timestamp)
-                        .toDate();
-                    final formattedDate =
-                        '${requestDate.day}/${requestDate.month}/${requestDate.year}';
-
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.assignment,
-                          color: Colors.blue,
-                        ),
-                        title: Text(petName),
-                        subtitle: Text(
-                          '$adotanteEmail • $formattedDate',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => AdoptionRequestDetailPage(
-                                requestId: requestId,
-                                requestData: data,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+            _buildRecentRequestsList(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRecentRequestsList() {
+    final ongId = _getOngId();
+    if (ongId == null) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Text(
+          'Usuário não autenticado',
+          style: TextStyle(color: Colors.grey),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('adoption_requests')
+          .where('ongId', isEqualTo: ongId)
+          .where('status', isEqualTo: 'pendente')
+          .snapshots()
+          .asBroadcastStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              'Nenhuma solicitação pendente',
+              style: TextStyle(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
+        var requests = snapshot.data!.docs;
+
+        // Ordenar por data decrescente e limitar a 5
+        requests.sort((a, b) {
+          final dateA =
+              (a['requestDate'] as Timestamp?)?.toDate() ?? DateTime(1970);
+          final dateB =
+              (b['requestDate'] as Timestamp?)?.toDate() ?? DateTime(1970);
+          return dateB.compareTo(dateA);
+        });
+        requests = requests.take(5).toList();
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: requests.length,
+          itemBuilder: (context, index) {
+            final data = requests[index].data() as Map<String, dynamic>;
+            final requestId = requests[index].id;
+            final petName = data['petName'] ?? 'Pet desconhecido';
+            final requestDate =
+                (data['requestDate'] as Timestamp?)?.toDate() ?? DateTime.now();
+            final formattedDate =
+                '${requestDate.day}/${requestDate.month}/${requestDate.year}';
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(Icons.assignment, color: Colors.blue),
+                title: Text(petName),
+                subtitle: Text(
+                  formattedDate,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                trailing: const Icon(Icons.arrow_forward),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AdoptionRequestDetailPage(
+                        requestId: requestId,
+                        requestData: data,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -245,7 +254,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   );
                 }
-
                 final count = snapshot.data ?? 0;
                 return Text(
                   count.toString(),
@@ -276,16 +284,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   void _showPendingRequests() {
+    final ongId = _getOngId();
+    if (ongId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Usuário não autenticado')));
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('adoption_requests')
-              .where('ongId', isEqualTo: _ongId)
+              .where('ongId', isEqualTo: ongId)
               .where('status', isEqualTo: 'pendente')
-              .orderBy('requestDate', descending: true)
-              .snapshots(),
+              .snapshots()
+              .asBroadcastStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -295,17 +311,26 @@ class _AdminDashboardState extends State<AdminDashboard> {
               return const Center(child: Text('Nenhuma solicitação pendente'));
             }
 
-            final requests = snapshot.data!.docs;
+            var requests = snapshot.data!.docs;
+
+            // Ordenar por data decrescente
+            requests.sort((a, b) {
+              final dateA =
+                  (a['requestDate'] as Timestamp?)?.toDate() ?? DateTime(1970);
+              final dateB =
+                  (b['requestDate'] as Timestamp?)?.toDate() ?? DateTime(1970);
+              return dateB.compareTo(dateA);
+            });
+
             return ListView.builder(
               itemCount: requests.length,
               itemBuilder: (context, index) {
                 final data = requests[index].data() as Map<String, dynamic>;
                 final requestId = requests[index].id;
                 final petName = data['petName'] ?? 'Pet desconhecido';
-                final adotanteEmail = data['adotanteEmail'] ?? 'N/A';
 
                 return ListTile(
-                  title: Text('$petName - $adotanteEmail'),
+                  title: Text(petName),
                   trailing: const Icon(Icons.arrow_forward),
                   onTap: () {
                     Navigator.pop(context);
