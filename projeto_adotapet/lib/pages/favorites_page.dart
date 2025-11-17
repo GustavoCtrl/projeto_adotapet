@@ -42,6 +42,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   breed: pet['breed']!,
                   size: pet['size']!,
                   sex: pet['sex']!,
+                  petId: pet['petId'] ?? '',
+                  ongId: pet['ongId'] ?? '',
+                  ongName: pet['shelter']!,
                   pastelOrange: Colors.orangeAccent.shade200,
                   pastelBlue: Colors.blue.shade200,
                 );

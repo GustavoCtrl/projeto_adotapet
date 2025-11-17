@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../data/favorites.dart';
 import '../pages/pet_details_page.dart';
+import '../pages/adoption_form_page.dart';
 
 class PetCard extends StatefulWidget {
   final String name;
@@ -16,6 +17,9 @@ class PetCard extends StatefulWidget {
   final String sex;
   final String especie;
   final String pelagem;
+  final String petId;
+  final String ongId;
+  final String ongName;
 
   const PetCard({
     super.key,
@@ -31,6 +35,9 @@ class PetCard extends StatefulWidget {
     required this.sex,
     this.especie = '',
     this.pelagem = '',
+    required this.petId,
+    required this.ongId,
+    required this.ongName,
   });
 
   @override
@@ -332,10 +339,13 @@ class _PetCardState extends State<PetCard> {
                       ),
                     ),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Solicitação de adoção enviada para ${widget.name}!',
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AdoptionFormPage(
+                            petId: widget.petId,
+                            petName: widget.name,
+                            ongId: widget.ongId,
+                            ongName: widget.ongName,
                           ),
                         ),
                       );

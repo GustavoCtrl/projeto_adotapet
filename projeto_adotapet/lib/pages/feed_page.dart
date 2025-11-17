@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../widgets/pet_card.dart';
 import '../widgets/pet_load.dart';
+
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
@@ -173,7 +174,7 @@ class _FeedPageState extends State<FeedPage> {
         ),
       ),
       body: _pets.isEmpty && _isLoadingMore
-    ? const Center(child: PetLoader())
+          ? const Center(child: PetLoader())
           : _pets.isEmpty
           ? const Center(
               child: Text(
@@ -204,6 +205,9 @@ class _FeedPageState extends State<FeedPage> {
                   sex: (data['sexo'] ?? '').toString(),
                   especie: (data['especie'] ?? '').toString(),
                   pelagem: (data['pelagem'] ?? '').toString(),
+                  petId: _pets[index].id,
+                  ongId: (data['abrigoId'] ?? '').toString(),
+                  ongName: (data['nomeOng'] ?? '').toString(),
                   pastelOrange: const Color(0xFFFFB74D),
                   pastelBlue: const Color(0xFF64B5F6),
                 );

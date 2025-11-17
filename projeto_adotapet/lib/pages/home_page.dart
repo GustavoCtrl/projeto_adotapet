@@ -3,6 +3,7 @@ import 'feed_page.dart';
 import 'favorites_page.dart';
 import 'profile_page.dart';
 import 'manage_pets_page.dart';
+import 'admin_dashboard.dart';
 import '../utils/auth_helper.dart';
 
 class HomePage extends StatefulWidget {
@@ -94,8 +95,8 @@ class _HomePageState extends State<HomePage> {
     const pastelBlue = Color(0xFF64B5F6);
 
     final pages = [
-      const FeedPage(),
-      const ManagePetsPage(), // << PÁGINA DE GERENCIAMENTO AQUI
+      const AdminDashboard(),
+      const ManagePetsPage(),
       ProfilePage(
         userRole: widget.userRole,
         onSwitchView: widget.userRole == 'admin' ? _switchAdminView : null,
@@ -115,11 +116,11 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: Colors.grey,
         onTap: (i) => setState(() => _selectedIndex = i),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Feed'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.pets),
-            label: 'Meus Pets', // << TEXTO DO BOTÃO ALTERADO
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Meus Pets'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
