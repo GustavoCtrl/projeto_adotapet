@@ -214,8 +214,6 @@ class _FeedPageState extends State<FeedPage> {
                   petId: _pets[index].id,
                   ongId: (data['abrigoId'] ?? '').toString(),
                   ongName: (data['nomeOng'] ?? '').toString(),
-                  pastelOrange: const Color(0xFFFFB74D),
-                  pastelBlue: const Color(0xFF64B5F6),
                 );
               },
             ),
