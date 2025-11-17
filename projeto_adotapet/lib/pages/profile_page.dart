@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/auth_helper.dart';
 import '../widgets/pet_load.dart';
+import 'my_adoptions_page.dart';
+import 'edit_profile_page.dart';
+
 class ProfilePage extends StatefulWidget {
-  final String? userRole; // 'adotante' ou 'ong' (apenas para admins)
-  final VoidCallback? onSwitchView; // Função para o admin trocar de visão
-  final String? currentAdminView; // Visão atual do admin
+  final String? userRole;
+  final VoidCallback? onSwitchView;
+  final String? currentAdminView;
 
   const ProfilePage({
     super.key,
@@ -33,7 +34,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _logout() async {
-    // Mostrar diálogo de confirmação
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -49,15 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () async {
               Navigator.pop(ctx);
               await AuthHelper.logout();
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Você foi desconectado com sucesso.'),
-                  ),
-                );
-              }
             },
-            child: const Text('Sair', style: TextStyle(color: Colors.red)),
+            child: const Text('Sair', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -68,8 +61,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meu Perfil'), // Título do AppBar
-        elevation: 1,
+        title: const Text('Perfil'),
+        backgroundColor: const Color(0xFF64B5F6),
+        elevation: 0,
       ),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: _userDataFuture,
@@ -85,164 +79,187 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           final userData = snapshot.data!;
+          final nomeUsuario = userData['nomeUsuario'] ?? 'Usuário';
           final email = userData['email'] ?? 'Sem email';
-          final tipoUsuario = userData['tipoUsuario'] ?? 'Desconhecido';
           final isAdmin = userData['isAdmin'] ?? false;
-          final nomeOng = userData['nomeOng'] ?? '';
-          final nomeAdministrador = userData['nomeAdministrador'] ?? '';
-          final endereco = userData['endereco'] ?? '';
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                // Header com avatar
-                Container(
-                  // Usando a cor primária do tema
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        // Removido const
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.person,
-                            size: 50,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                // Card com Nome do Usuário (Clicável)
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditProfilePage(userData: userData),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF64B5F6).withValues(alpha: 0.8),
+                          const Color(0xFF64B5F6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          email,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    nomeUsuario,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    email,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            isAdmin ? '👑 Administrador' : tipoUsuario,
-                            style: const TextStyle(
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.edit,
                               color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                              size: 16,
                             ),
-                          ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              'Toque para editar',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
 
-                const SizedBox(height: 24),
-
-                // Informações do usuário
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                // Menu em Lista
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Tipo de usuário
-                      _buildInfoCard(
-                        title: 'Tipo de Conta',
-                        value: tipoUsuario == 'adotante'
-                            ? '🐾 Adotante'
-                            : '🏢 ONG/Abrigo',
-                        icon: Icons.account_circle,
+                      // Minhas Adoções
+                      _buildMenuTile(
+                        icon: Icons.pets,
+                        title: 'Minhas Adoções',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const MyAdoptionsPage(),
+                            ),
+                          );
+                        },
                       ),
+                      Divider(height: 0, color: Colors.grey[300]),
 
-                      const SizedBox(height: 16),
-
-                      // Se for ONG, mostrar informações
-                      if (tipoUsuario == 'abrigo') ...[
-                        _buildInfoCard(
-                          title: 'Nome da ONG',
-                          value: nomeOng.isEmpty ? 'Não informado' : nomeOng,
-                          icon: Icons.business,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoCard(
-                          title: 'Administrador',
-                          value: nomeAdministrador.isEmpty
-                              ? 'Não informado'
-                              : nomeAdministrador,
-                          icon: Icons.person_outline,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildInfoCard(
-                          title: 'Endereço',
-                          value: endereco.isEmpty ? 'Não informado' : endereco,
-                          icon: Icons.location_on,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // Se for admin, mostrar opção de trocar role
-                      if (isAdmin) ...[
-                        const Divider(height: 32),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: widget.onSwitchView,
-                            icon: const Icon(Icons.switch_account),
-                            label: Text(
-                              widget.currentAdminView == 'adotante'
-                                  ? 'Mudar para Visão ONG'
-                                  : 'Mudar para Visão Adotante',
+                      // Configurações
+                      _buildMenuTile(
+                        icon: Icons.settings,
+                        title: 'Configurações',
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Configurações em breve!'),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Como administrador, você pode alternar entre as interfaces.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-
-                      // Botão de Logout
-                      const Divider(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            side: const BorderSide(color: Colors.red),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          icon: const Icon(Icons.logout),
-                          label: const Text(
-                            'Sair da Conta',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          onPressed: _logout,
-                        ),
+                          );
+                        },
                       ),
+                      Divider(height: 0, color: Colors.grey[300]),
 
-                      const SizedBox(height: 24),
+                      // Logout
+                      _buildMenuTile(
+                        icon: Icons.logout,
+                        title: 'Sair',
+                        color: Colors.red,
+                        onTap: _logout,
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 24),
+
+                // Botão de Trocar Visão (Apenas para Admins)
+                if (isAdmin && widget.userRole == 'admin')
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFB74D),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                      icon: const Icon(Icons.swap_horiz, color: Colors.white),
+                      label: const Text(
+                        'Trocar Visão de Usuário',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: widget.onSwitchView,
+                    ),
+                  ),
+                const SizedBox(height: 24),
               ],
             ),
           );
@@ -251,51 +268,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildInfoCard({
-    required String title,
-    required String value,
+  Widget _buildMenuTile({
     required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    Color color = Colors.black87,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        // Removido const
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[300]!),
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(
+        title,
+        style: TextStyle(color: color, fontWeight: FontWeight.w500),
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      onTap: onTap,
     );
   }
 }

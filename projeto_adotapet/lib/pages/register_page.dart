@@ -15,6 +15,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   // Controladores de texto
+  final _nomeUsuarioController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -35,6 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
   // Limpa os controladores quando o widget é descartado
   @override
   void dispose() {
+    _nomeUsuarioController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -46,7 +48,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Função principal de cadastro
   Future<void> _register() async {
-    // 1. Validar se as senhas coincidem
+    // 1. Validar se o nome foi preenchido
+    if (_nomeUsuarioController.text.trim().isEmpty) {
+      _showErrorDialog("Por favor, informe seu nome.");
+      return;
+    }
+
+    // 2. Validar se as senhas coincidem
     if (_passwordController.text.trim() !=
         _confirmPasswordController.text.trim()) {
       _showErrorDialog("As senhas não coincidem.");
@@ -85,6 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
         // Criamos um 'documento' na coleção 'usuarios' com o ID do usuário
         final userDoc = <String, dynamic>{
+          'nomeUsuario': _nomeUsuarioController.text.trim(),
           'email': _emailController.text.trim(),
           'tipoUsuario': userTypeString,
           'uid': uid,
@@ -263,6 +272,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
+
+                // Campo de Nome
+                TextField(
+                  controller: _nomeUsuarioController,
+                  decoration: InputDecoration(
+                    labelText: 'Seu Nome',
+                    prefixIcon: const Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
 
                 // Campo de Email
                 TextField(
