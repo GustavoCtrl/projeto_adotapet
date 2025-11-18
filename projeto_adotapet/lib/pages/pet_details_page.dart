@@ -104,13 +104,6 @@ class _PetDetailsPageState extends State<PetDetailsPage>
               },
             ),
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               background: Image.network(
                 widget.photoUrl,
                 fit: BoxFit.cover,

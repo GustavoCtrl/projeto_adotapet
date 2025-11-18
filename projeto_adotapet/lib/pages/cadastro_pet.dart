@@ -18,6 +18,44 @@ class _AddPetPageState extends State<AddPetPage> {
   // Controladores para o formulário
   final _nameController = TextEditingController();
   final _descricaoController = TextEditingController();
+  final Map<String, List<String>> racasPorEspecie = {
+    'Cão': [
+      'SRD',
+      'Poodle',
+      'Labrador',
+      'Golden Retriever',
+      'Bulldog',
+      'Beagle',
+      'Pinscher',
+      'Shih-tzu',
+    ],
+    'Gato': ['SRD', 'Siamês', 'Persa', 'Angorá', 'Maine Coon', 'Sphynx'],
+    'Pássaro': ['Calopsita', 'Periquito', 'Papagaio', 'Outro'],
+    'Roedor': ['Hamster', 'Porquinho da Índia', 'Coelho', 'Outro'],
+    'Outro': ['Outro'],
+  };
+  final Map<String, List<String>> pelagensPorEspecie = {
+    'Cão': [
+      'Curto',
+      'Médio',
+      'Longo',
+      'Dupla',
+      'Rústica',
+      'Encaracolada',
+      'Sem Pelo',
+    ],
+    'Gato': [
+      'Curto',
+      'Médio',
+      'Longo',
+      'Denso',
+      'Cacheado',
+      'Sem Pelo (Sphynx)',
+    ],
+    'Pássaro': ['Penas curtas', 'Penas longas', 'Colorido'],
+    'Roedor': ['Curto', 'Longo', 'Liso', 'Crespo'],
+    'Outro': ['Indefinido'],
+  };
 
   // Variável para guardar o arquivo da imagem selecionada
   File? _selectedImage;
@@ -31,27 +69,18 @@ class _AddPetPageState extends State<AddPetPage> {
   String? _selectedPorte;
 
   // Lista de pelagens e valor selecionado
-  final List<String> _pelagens = ['Curto', 'Médio', 'Longo', 'Sem Pelo'];
+  List<String> _pelagensDinamicas = [];
   String? _selectedPelagem;
 
   // Lista de idades e valor selecionado
-  final List<String> _idades = [
-    'Filhote (até 1 ano)',
-    'Adulto (1 a 7 anos)',
-    'Idoso (acima de 7 anos)',
-  ];
+  final List<String> _idades = List.generate(
+    21,
+    (i) => i == 0 ? 'Filhote (< 1 ano)' : '$i anos',
+  );
   String? _selectedIdade;
 
   // Lista de raças (simplificada) e valor selecionado
-  final List<String> _racas = [
-    'SRD (Sem Raça Definida)',
-    'Poodle',
-    'Labrador',
-    'Golden Retriever',
-    'Siamês',
-    'Persa',
-    'Outra',
-  ];
+  List<String> _racasDinamicas = [];
   String? _selectedRaca;
 
   // Variável para guardar o sexo selecionado
@@ -188,9 +217,7 @@ class _AddPetPageState extends State<AddPetPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cadastrar Novo Pet'),        
-      ),
+      appBar: AppBar(title: const Text('Cadastrar Novo Pet')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -244,9 +271,18 @@ class _AddPetPageState extends State<AddPetPage> {
                 onChanged: (newValue) {
                   setState(() {
                     _selectedEspecie = newValue;
+
+                    // RAÇAS DINÂMICAS
+                    _racasDinamicas = racasPorEspecie[newValue] ?? [];
+                    _selectedRaca = null;
+
+                    // PELAGENS DINÂMICAS
+                    _pelagensDinamicas = pelagensPorEspecie[newValue] ?? [];
+                    _selectedPelagem = null;
                   });
                 },
-                validator: (value) => value == null ? 'Campo obrigatório' : null,
+                validator: (value) =>
+                    value == null ? 'Campo obrigatório' : null,
               ),
               const SizedBox(height: 15),
               TextFormField(
@@ -261,13 +297,17 @@ class _AddPetPageState extends State<AddPetPage> {
                 decoration: _inputDecoration('Raça'),
                 value: _selectedRaca,
                 hint: const Text('Selecione a raça'),
-                items: _racas.map((String raca) {
-                  return DropdownMenuItem<String>(value: raca, child: Text(raca));
+                items: _racasDinamicas.map((String raca) {
+                  return DropdownMenuItem<String>(
+                    value: raca,
+                    child: Text(raca),
+                  );
                 }).toList(),
                 onChanged: (newValue) {
                   setState(() => _selectedRaca = newValue);
                 },
-                validator: (value) => value == null ? 'Campo obrigatório' : null,
+                validator: (value) =>
+                    value == null ? 'Campo obrigatório' : null,
               ),
               const SizedBox(height: 15),
               // Seleção de Porte
@@ -284,7 +324,8 @@ class _AddPetPageState extends State<AddPetPage> {
                 onChanged: (newValue) {
                   setState(() => _selectedPorte = newValue);
                 },
-                validator: (value) => value == null ? 'Campo obrigatório' : null,
+                validator: (value) =>
+                    value == null ? 'Campo obrigatório' : null,
               ),
               const SizedBox(height: 15),
               // Seleção de Pelagem
@@ -292,7 +333,7 @@ class _AddPetPageState extends State<AddPetPage> {
                 decoration: _inputDecoration('Pelagem'),
                 value: _selectedPelagem,
                 hint: const Text('Selecione a pelagem'),
-                items: _pelagens.map((String pelagem) {
+                items: _pelagensDinamicas.map((String pelagem) {
                   return DropdownMenuItem<String>(
                     value: pelagem,
                     child: Text(pelagem),
@@ -301,7 +342,8 @@ class _AddPetPageState extends State<AddPetPage> {
                 onChanged: (newValue) {
                   setState(() => _selectedPelagem = newValue);
                 },
-                validator: (value) => value == null ? 'Campo obrigatório' : null,
+                validator: (value) =>
+                    value == null ? 'Campo obrigatório' : null,
               ),
               const SizedBox(height: 15),
               // Seleção de Idade
@@ -318,7 +360,8 @@ class _AddPetPageState extends State<AddPetPage> {
                 onChanged: (newValue) {
                   setState(() => _selectedIdade = newValue);
                 },
-                validator: (value) => value == null ? 'Campo obrigatório' : null,
+                validator: (value) =>
+                    value == null ? 'Campo obrigatório' : null,
               ),
               const SizedBox(height: 15),
 
@@ -336,7 +379,8 @@ class _AddPetPageState extends State<AddPetPage> {
                 onChanged: (newValue) {
                   setState(() => _selectedSex = newValue);
                 },
-                validator: (value) => value == null ? 'Campo obrigatório' : null,
+                validator: (value) =>
+                    value == null ? 'Campo obrigatório' : null,
               ),
               const SizedBox(height: 15),
 
