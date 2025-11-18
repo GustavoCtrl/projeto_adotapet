@@ -123,8 +123,7 @@ class _AdoptionFormPageState extends State<AdoptionFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Formulário de Adoção'),
-        backgroundColor: const Color(0xFF64B5F6),
+        title: const Text('Formulário de Adoção'),        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -137,7 +136,7 @@ class _AdoptionFormPageState extends State<AdoptionFormPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF64B5F6).withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
@@ -162,7 +161,7 @@ class _AdoptionFormPageState extends State<AdoptionFormPage> {
 
               // Seção de Regras e Termos
               const Text(
-                '📋 Termos e Condições',
+                'Termos e Condições',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
@@ -207,7 +206,7 @@ class _AdoptionFormPageState extends State<AdoptionFormPage> {
 
               // Seção de Dados do Adotante
               const Text(
-                '👤 Seus Dados',
+                'Seus Dados',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
@@ -298,7 +297,6 @@ class _AdoptionFormPageState extends State<AdoptionFormPage> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFB74D),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   icon: const Icon(Icons.send, color: Colors.white),

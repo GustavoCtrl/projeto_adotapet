@@ -39,12 +39,18 @@ class PetDetailsPage extends StatefulWidget {
   State<PetDetailsPage> createState() => _PetDetailsPageState();
 }
 
-class _PetDetailsPageState extends State<PetDetailsPage> {
+class _PetDetailsPageState extends State<PetDetailsPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
   late bool _liked;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
     _liked = favoritePets.any((p) => p['petId'] == widget.petId);
   }
 
@@ -52,11 +58,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
     setState(() {
       if (_liked) {
         favoritePets.removeWhere((p) => p['petId'] == widget.petId);
-        _liked = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.name} removido dos favoritos')),
-        );
       } else {
+        _animationController.forward(from: 0.0);
         favoritePets.add({
           'petId': widget.petId,
           'name': widget.name,
@@ -72,17 +75,20 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           'ongId': widget.ongId,
           'ongName': widget.ongName,
         });
-        _liked = true;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.name} adicionado aos favoritos')),
-        );
       }
+      _liked = !_liked;
     });
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final pastelOrange = Theme.of(context).colorScheme.secondary;
+    final isLightMode = Theme.of(context).brightness == Brightness.light;
 
     return Scaffold(
       body: CustomScrollView(
@@ -90,7 +96,6 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           SliverAppBar(
             expandedHeight: 300.0,
             pinned: true,
-            backgroundColor: pastelOrange,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 widget.name,
@@ -110,18 +115,30 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
               ),
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.share, color: Colors.white),
+              _buildAppBarAction(
+                context: context,
+                icon: Icons.share,
                 onPressed: () {
-                  Share.share('🐾 Veja ${widget.name}: ${widget.description}');
+                  Share.share('Veja ${widget.name}: ${widget.description}');
                 },
               ),
-              IconButton(
-                icon: Icon(
-                  _liked ? Icons.favorite : Icons.favorite_border,
-                  color: _liked ? Colors.red : Colors.white,
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ScaleTransition(
+                  scale: Tween(begin: 1.0, end: 1.3)
+                      .chain(CurveTween(curve: Curves.easeOut))
+                      .animate(_animationController),
+                  child: _buildAppBarAction(
+                    context: context,
+                    icon: _liked ? Icons.favorite : Icons.favorite_border,
+                    iconColor: _liked
+                        ? Colors.red
+                        : isLightMode
+                            ? Colors.black87
+                            : Colors.white,
+                    onPressed: _toggleFavorite,
+                  ),
                 ),
-                onPressed: _toggleFavorite,
               ),
             ],
           ),
@@ -132,7 +149,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Nome e Abrigo
-                  Text(
+                  SelectableText(
                     widget.name,
                     style: const TextStyle(
                       fontSize: 28,
@@ -149,7 +166,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        widget.shelterName,
+                        'Oferecido por ${widget.shelterName}',
                         style: TextStyle(
                           fontSize: 16,
                           color: Theme.of(context).hintColor,
@@ -165,26 +182,28 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
+                  GridView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 2.8,
+                    ),
                     children: [
-                      _buildInfoCard('Idade', widget.age, Icons.cake),
-                      _buildInfoCard(
-                        'Sexo',
-                        widget.sex,
-                        widget.sex == 'Macho' ? Icons.male : Icons.female,
-                      ),
+                      _buildInfoCard('Idade', widget.age, Icons.cake_outlined),
+                      _buildInfoCard('Sexo', widget.sex,
+                          widget.sex == 'Macho' ? Icons.male : Icons.female),
                       _buildInfoCard('Porte', widget.size, Icons.height),
                       _buildInfoCard('Raça', widget.breed, Icons.pets),
                       if (widget.especie.isNotEmpty)
                         _buildInfoCard(
-                          'Espécie',
-                          widget.especie,
-                          Icons.category,
-                        ),
+                            'Espécie', widget.especie, Icons.category_outlined),
                       if (widget.pelagem.isNotEmpty)
-                        _buildInfoCard('Pelagem', widget.pelagem, Icons.style),
+                        _buildInfoCard(
+                            'Pelagem', widget.pelagem, Icons.style_outlined),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -195,7 +214,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  SelectableText(
                     widget.description,
                     style: const TextStyle(fontSize: 16, height: 1.5),
                   ),
@@ -210,8 +229,6 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: pastelOrange,
-            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -235,6 +252,26 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAppBarAction({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onPressed,
+    Color? iconColor,
+  }) {
+    final isLightMode = Theme.of(context).brightness == Brightness.light;
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: isLightMode ? Colors.white70 : Colors.black54,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: iconColor ?? (isLightMode ? Colors.black87 : Colors.white)),
+        onPressed: onPressed,
       ),
     );
   }

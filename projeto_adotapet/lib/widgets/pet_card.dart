@@ -38,13 +38,27 @@ class PetCard extends StatefulWidget {
   State<PetCard> createState() => _PetCardState();
 }
 
-class _PetCardState extends State<PetCard> {
+class _PetCardState extends State<PetCard> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.3).chain(CurveTween(curve: Curves.easeOut)).animate(_animationController);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final bool isFavorited = favoritePets.any(
-      (pet) => pet['petId'] == widget.petId,
-    );
+    final bool isFavorited =
+        favoritePets.any((pet) => pet['petId'] == widget.petId);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -94,12 +108,14 @@ class _PetCardState extends State<PetCard> {
                   top: 12,
                   right: 12,
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () {                      
                       if (isFavorited) {
                         favoritePets.removeWhere(
                           (pet) => pet['petId'] == widget.petId,
                         );
                       } else {
+                        // Animação ao favoritar
+                        _animationController.forward(from: 0.0);
                         favoritePets.add({
                           'petId': widget.petId,
                           'name': widget.name,
@@ -117,16 +133,6 @@ class _PetCardState extends State<PetCard> {
                         });
                       }
                       setState(() {});
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isFavorited
-                                ? '${widget.name} removido dos favoritos'
-                                : '${widget.name} adicionado aos favoritos',
-                          ),
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(8),
@@ -134,10 +140,13 @@ class _PetCardState extends State<PetCard> {
                         color: Colors.black.withOpacity(0.4),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorited ? Colors.redAccent : Colors.white,
-                        size: 24,
+                      child: ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Icon(
+                          isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorited ? Colors.redAccent : Colors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),

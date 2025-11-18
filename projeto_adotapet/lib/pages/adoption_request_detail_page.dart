@@ -148,10 +148,7 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
     final responseDate = widget.requestData['responseDate'] as Timestamp?;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalhes da Solicitação'),
-        backgroundColor: const Color(0xFF64B5F6),
-      ),
+      appBar: AppBar(title: const Text('Detalhes da Solicitação')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -181,19 +178,19 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
 
             // Informações do Pet
             const Text(
-              '🐾 Informações do Pet',
+              'Informações do Pet',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             _buildInfoCard(
               label: 'Nome do Pet',
-              value: widget.requestData['petName'] ?? 'N/A',
+              value: widget.requestData['petName'] ?? 'Não informado',
             ),
             const SizedBox(height: 20),
 
             // Informações do Adotante
             const Text(
-              '👤 Informações do Adotante',
+              'Informações do Adotante',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -222,14 +219,14 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
 
             // Motivo da Adoção
             const Text(
-              '💭 Motivo da Adoção',
+              'Motivo da Adoção',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Theme.of(context).dividerColor),
               ),
@@ -263,8 +260,8 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 12),
-                  const Text(
-                    '❌ Motivo da Rejeição',
+                  Text(
+                    'Motivo da Rejeição',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -273,7 +270,7 @@ class _AdoptionRequestDetailPageState extends State<AdoptionRequestDetailPage> {
                     decoration: BoxDecoration(
                       color: Theme.of(
                         context,
-                      ).colorScheme.error.withValues(alpha: 0.1),
+                      ).colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: Theme.of(context).colorScheme.error,

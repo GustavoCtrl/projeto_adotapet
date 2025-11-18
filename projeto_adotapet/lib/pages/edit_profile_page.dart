@@ -100,10 +100,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar Perfil'),
-        backgroundColor: const Color(0xFF64B5F6),
-      ),
+      appBar: AppBar(title: const Text('Editar Perfil')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -115,13 +112,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF64B5F6).withValues(alpha: 0.2),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.person,
                   size: 50,
-                  color: Color(0xFF64B5F6),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -129,7 +126,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             // Seção de Informações
             const Text(
-              '👤 Informações Pessoais',
+              'Informações Pessoais',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -202,7 +199,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF64B5F6),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 icon: const Icon(Icons.save, color: Colors.white),

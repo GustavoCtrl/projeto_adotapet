@@ -152,10 +152,7 @@ class _EditPetPageState extends State<EditPetPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar Pet'),
-        backgroundColor: Colors.teal,
-      ),
+      appBar: AppBar(title: const Text('Editar Pet')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -337,7 +334,6 @@ class _EditPetPageState extends State<EditPetPage> {
                     child: ElevatedButton.icon(
                       onPressed: _savePet,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

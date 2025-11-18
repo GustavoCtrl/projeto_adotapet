@@ -62,11 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        backgroundColor: const Color(0xFF64B5F6),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Perfil'), elevation: 0),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: _userDataFuture,
         builder: (context, snapshot) {
@@ -104,8 +100,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xFF64B5F6).withValues(alpha: 0.8),
-                          const Color(0xFF64B5F6),
+                          Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.8),
+                          Theme.of(context).colorScheme.primary,
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -113,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -142,9 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     email,
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.white.withValues(
-                                        alpha: 0.8,
-                                      ),
+                                      color: Colors.white.withOpacity(0.8),
                                     ),
                                   ),
                                 ],
@@ -154,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               width: 60,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: Colors.white.withOpacity(0.3),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -249,8 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFB74D),
+                      style: ElevatedButton.styleFrom(                        
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 12,

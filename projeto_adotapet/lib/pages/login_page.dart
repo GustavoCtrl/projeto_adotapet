@@ -28,19 +28,13 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
-      // Tratar erros de login (ex: usuário não encontrado, senha errada)
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Erro no Login'),
-          content: Text(e.message ?? "Ocorreu um erro."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+      String message = 'Ocorreu um erro no login.';
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        message = 'Email ou senha incorretos.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
       );
     }
 
@@ -69,7 +63,11 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.pets, size: 80, color: Colors.teal),
+                Icon(
+                  Icons.pets,
+                  size: 60,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(height: 20),
                 Text(
                   'Bem-vindo!',
@@ -125,18 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: _login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            'Entrar',
-                            style: TextStyle(fontSize: 18),
-                          ),
+                          child: const Text('Entrar'),
                         ),
                       ),
                 const SizedBox(height: 20),
@@ -150,10 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: widget.showRegisterPage, // Chama a função
                       child: const Text(
                         'Cadastre-se!',
-                        style: TextStyle(
-                          color: Colors.teal,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],

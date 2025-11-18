@@ -55,8 +55,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildAdoptantInterface() {
-    const pastelOrange = Color(0xFFFFB74D);
-
     final pages = [
       const FeedPage(),
       const FavoritesPage(),
@@ -76,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: pastelOrange,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey,
         onTap: (i) => setState(() => _selectedIndex = i),
         items: const [
@@ -92,8 +90,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildOngInterface() {
-    const pastelBlue = Color(0xFF64B5F6);
-
     final pages = [
       const AdminDashboard(),
       const ManagePetsPage(),
@@ -112,7 +108,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: pastelBlue,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey,
         onTap: (i) => setState(() => _selectedIndex = i),
         items: const [

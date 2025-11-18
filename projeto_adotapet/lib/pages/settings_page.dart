@@ -19,10 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('⚙️ Configurações'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
+      appBar: AppBar(title: const Text('Configurações')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -135,12 +132,12 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTip('💡', 'Use o modo escuro para economizar bateria'),
+                _buildTip(Icons.lightbulb_outline, 'Use o modo escuro para economizar bateria'),
                   const SizedBox(height: 12),
-                  _buildTip('🐾', 'Explore todos os pets disponíveis no feed'),
+                _buildTip(Icons.pets_outlined, 'Explore todos os pets disponíveis no feed'),
                   const SizedBox(height: 12),
-                  _buildTip(
-                    '❤️',
+                _buildTip(
+                    Icons.favorite_outline,
                     'Marque seus pets favoritos para encontrá-los depois',
                   ),
                 ],
@@ -166,10 +163,10 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildTip(String emoji, String text) {
+  Widget _buildTip(IconData icon, String text) {
     return Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 16)),
+        Icon(icon, size: 20, color: Theme.of(context).hintColor),
         const SizedBox(width: 12),
         Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
       ],

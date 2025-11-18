@@ -43,11 +43,11 @@ class _MyAdoptionsPageState extends State<MyAdoptionsPage> {
   String _getStatusLabel(String status) {
     switch (status) {
       case 'pendente':
-        return '⏳ Pendente';
+        return 'Pendente';
       case 'aprovado':
-        return '✅ Aprovado';
+        return 'Aprovado';
       case 'rejeitado':
-        return '❌ Rejeitado';
+        return 'Rejeitado';
       default:
         return status;
     }
@@ -56,10 +56,7 @@ class _MyAdoptionsPageState extends State<MyAdoptionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Minhas Adoções'),
-        backgroundColor: const Color(0xFF64B5F6),
-      ),
+      appBar: AppBar(title: const Text('Minhas Adoções')),
       body: _userId == null
           ? const Center(child: Text('Usuário não autenticado.'))
           : StreamBuilder<QuerySnapshot>(
@@ -168,7 +165,7 @@ class _MyAdoptionsPageState extends State<MyAdoptionsPage> {
                                     decoration: BoxDecoration(
                                       color: _getStatusColor(
                                         status,
-                                      ).withValues(alpha: 0.2),
+                                      ).withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
                                         color: _getStatusColor(status),

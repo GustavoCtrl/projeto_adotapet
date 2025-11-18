@@ -14,6 +14,7 @@ class AddPetPage extends StatefulWidget {
 }
 
 class _AddPetPageState extends State<AddPetPage> {
+  final _formKey = GlobalKey<FormState>();
   // Controladores para o formulário
   final _nameController = TextEditingController();
   final _descricaoController = TextEditingController();
@@ -78,18 +79,9 @@ class _AddPetPageState extends State<AddPetPage> {
 
   // Função para fazer o upload da imagem e salvar o pet
   Future<void> _savePet() async {
-    // 1. Validar se os campos estão preenchidos e uma imagem foi selecionada
-    if (_nameController.text.isEmpty ||
-        _selectedEspecie == null ||
-        _selectedRaca == null ||
-        _selectedPorte == null ||
-        _selectedPelagem == null ||
-        _selectedIdade == null ||
-        _selectedSex == null ||
-        _descricaoController.text.isEmpty) {
-      _showErrorDialog("Por favor, preencha todos os campos do formulário.");
-      return;
-    }
+    // 1. Validar o formulário
+    if (!_formKey.currentState!.validate()) return;
+
     if (_selectedImage == null) {
       _showErrorDialog("Por favor, selecione uma imagem para o pet.");
       return;
@@ -197,211 +189,186 @@ class _AddPetPageState extends State<AddPetPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastrar Novo Pet'),
-        backgroundColor: Colors.teal,
+        title: const Text('Cadastrar Novo Pet'),        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            // Área de Visualização da Imagem
-            GestureDetector(
-              onTap: _pickImage, // Chama o seletor de imagem
-              child: Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).dividerColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).dividerColor),
-                ),
-                child: _selectedImage != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                      )
-                    : Center(
-                        child: Icon(
-                          Icons.camera_alt,
-                          size: 60,
-                          color: Theme.of(context).hintColor,
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Clique no ícone para adicionar uma foto',
-              style: TextStyle(color: Theme.of(context).hintColor),
-            ),
-            const SizedBox(height: 30),
-
-            // Formulário
-            // Seleção de Espécie
-            DropdownButtonFormField<String>(
-              decoration: _inputDecoration('Espécie'),
-              value: _selectedEspecie,
-              hint: const Text('Selecione a espécie'),
-              items: _especies.map((String especie) {
-                return DropdownMenuItem<String>(
-                  value: especie,
-                  child: Text(especie),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedEspecie = newValue;
-                });
-              },
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: _nameController,
-              decoration: _inputDecoration('Nome do Pet'),
-            ),
-            const SizedBox(height: 15),
-            // Seleção de Raça
-            DropdownButtonFormField<String>(
-              decoration: _inputDecoration('Raça'),
-              value: _selectedRaca,
-              hint: const Text('Selecione a raça'),
-              items: _racas.map((String raca) {
-                return DropdownMenuItem<String>(value: raca, child: Text(raca));
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() => _selectedRaca = newValue);
-              },
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
-            ),
-            const SizedBox(height: 15),
-            // Seleção de Porte
-            DropdownButtonFormField<String>(
-              decoration: _inputDecoration('Porte'),
-              value: _selectedPorte,
-              hint: const Text('Selecione o porte'),
-              items: _portes.map((String porte) {
-                return DropdownMenuItem<String>(
-                  value: porte,
-                  child: Text(porte),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() => _selectedPorte = newValue);
-              },
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
-            ),
-            const SizedBox(height: 15),
-            // Seleção de Pelagem
-            DropdownButtonFormField<String>(
-              decoration: _inputDecoration('Pelagem'),
-              value: _selectedPelagem,
-              hint: const Text('Selecione a pelagem'),
-              items: _pelagens.map((String pelagem) {
-                return DropdownMenuItem<String>(
-                  value: pelagem,
-                  child: Text(pelagem),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() => _selectedPelagem = newValue);
-              },
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
-            ),
-            const SizedBox(height: 15),
-            // Seleção de Idade
-            DropdownButtonFormField<String>(
-              decoration: _inputDecoration('Faixa de Idade'),
-              value: _selectedIdade,
-              hint: const Text('Selecione a faixa de idade'),
-              items: _idades.map((String idade) {
-                return DropdownMenuItem<String>(
-                  value: idade,
-                  child: Text(idade),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() => _selectedIdade = newValue);
-              },
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
-            ),
-            const SizedBox(height: 15),
-
-            // Seleção de Sexo
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12.0),
-                    child: Text(
-                      'Sexo',
-                      style: TextStyle(
-                        color:
-                            Theme.of(context).textTheme.bodyMedium?.color ??
-                            Colors.black54,
-                        fontSize: 16,
-                      ),
-                    ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Área de Visualização da Imagem
+              GestureDetector(
+                onTap: _pickImage, // Chama o seletor de imagem
+                child: Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).dividerColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('Macho'),
-                          value: 'Macho',
-                          groupValue: _selectedSex,
-                          onChanged: (v) => setState(() => _selectedSex = v),
-                        ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('Fêmea'),
-                          value: 'Fêmea',
-                          groupValue: _selectedSex,
-                          onChanged: (v) => setState(() => _selectedSex = v),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-
-            TextField(
-              controller: _descricaoController,
-              maxLines: 3,
-              decoration: _inputDecoration('Descrição'),
-            ),
-            const SizedBox(height: 40),
-
-            // Botão de Salvar
-            _isLoading
-                ? const PetLoader()
-                : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.save),
-                      label: const Text('Salvar Pet'),
-                      onPressed: _savePet,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
+                  child: _selectedImage != null
+                      ? ClipRRect(
                           borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 60,
+                            color: Theme.of(context).hintColor,
+                          ),
                         ),
-                        textStyle: const TextStyle(fontSize: 18),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Clique no ícone para adicionar uma foto',
+                style: TextStyle(color: Theme.of(context).hintColor),
+              ),
+              const SizedBox(height: 30),
+
+              // Formulário
+              // Seleção de Espécie
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Espécie'),
+                value: _selectedEspecie,
+                hint: const Text('Selecione a espécie'),
+                items: _especies.map((String especie) {
+                  return DropdownMenuItem<String>(
+                    value: especie,
+                    child: Text(especie),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedEspecie = newValue;
+                  });
+                },
+                validator: (value) => value == null ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+              TextFormField(
+                controller: _nameController,
+                decoration: _inputDecoration('Nome do Pet'),
+                validator: (value) =>
+                    (value?.isEmpty ?? true) ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+              // Seleção de Raça
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Raça'),
+                value: _selectedRaca,
+                hint: const Text('Selecione a raça'),
+                items: _racas.map((String raca) {
+                  return DropdownMenuItem<String>(value: raca, child: Text(raca));
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() => _selectedRaca = newValue);
+                },
+                validator: (value) => value == null ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+              // Seleção de Porte
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Porte'),
+                value: _selectedPorte,
+                hint: const Text('Selecione o porte'),
+                items: _portes.map((String porte) {
+                  return DropdownMenuItem<String>(
+                    value: porte,
+                    child: Text(porte),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() => _selectedPorte = newValue);
+                },
+                validator: (value) => value == null ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+              // Seleção de Pelagem
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Pelagem'),
+                value: _selectedPelagem,
+                hint: const Text('Selecione a pelagem'),
+                items: _pelagens.map((String pelagem) {
+                  return DropdownMenuItem<String>(
+                    value: pelagem,
+                    child: Text(pelagem),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() => _selectedPelagem = newValue);
+                },
+                validator: (value) => value == null ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+              // Seleção de Idade
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Faixa de Idade'),
+                value: _selectedIdade,
+                hint: const Text('Selecione a faixa de idade'),
+                items: _idades.map((String idade) {
+                  return DropdownMenuItem<String>(
+                    value: idade,
+                    child: Text(idade),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() => _selectedIdade = newValue);
+                },
+                validator: (value) => value == null ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+
+              // Seleção de Sexo
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Sexo'),
+                value: _selectedSex,
+                hint: const Text('Selecione o sexo'),
+                items: ['Macho', 'Fêmea'].map((String sexo) {
+                  return DropdownMenuItem<String>(
+                    value: sexo,
+                    child: Text(sexo),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() => _selectedSex = newValue);
+                },
+                validator: (value) => value == null ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 15),
+
+              TextFormField(
+                controller: _descricaoController,
+                maxLines: 3,
+                decoration: _inputDecoration('Descrição'),
+                validator: (value) =>
+                    (value?.isEmpty ?? true) ? 'Campo obrigatório' : null,
+              ),
+              const SizedBox(height: 40),
+
+              // Botão de Salvar
+              _isLoading
+                  ? const PetLoader()
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.save),
+                        label: const Text('Salvar Pet'),
+                        onPressed: _savePet,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          textStyle: const TextStyle(fontSize: 18),
+                        ),
                       ),
                     ),
-                  ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -410,7 +377,7 @@ class _AddPetPageState extends State<AddPetPage> {
   // Helper para decoração do Input
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
-      labelText: label,
+      label: Text(label),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     );
   }

@@ -14,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _formKey = GlobalKey<FormState>();
   // Controladores de texto
   final _nomeUsuarioController = TextEditingController();
   final _emailController = TextEditingController();
@@ -48,30 +49,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Função principal de cadastro
   Future<void> _register() async {
-    // 1. Validar se o nome foi preenchido
-    if (_nomeUsuarioController.text.trim().isEmpty) {
-      _showErrorDialog("Por favor, informe seu nome.");
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    // 2. Validar se as senhas coincidem
-    if (_passwordController.text.trim() !=
-        _confirmPasswordController.text.trim()) {
-      _showErrorDialog("As senhas não coincidem.");
-      return;
-    }
-
-    // Validação extra se for um abrigo
-    if (_selectedUserType == UserType.abrigo) {
-      if (_nomeOngController.text.trim().isEmpty ||
-          _nomeAdministradorController.text.trim().isEmpty ||
-          _enderecoController.text.trim().isEmpty) {
-        _showErrorDialog("Para abrigos, todos os campos são obrigatórios.");
-        return;
-      }
-    }
-
-    // 2. Mostrar indicador de loading
     setState(() {
       _isLoading = true;
     });
@@ -170,252 +149,280 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Ícone ou Logo
-                const Icon(Icons.pets, size: 80, color: Colors.teal),
-                const SizedBox(height: 20),
-                Text(
-                  'Criar conta no AdotaPet',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        Theme.of(context).textTheme.headlineLarge?.color ??
-                        Colors.grey[800],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Ícone ou Logo
+                  Icon(Icons.pets,
+                      size: 80, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Criar conta no AdotaPet',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.headlineLarge?.color ??
+                          Colors.grey[800],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
-                // Seleção de Tipo de Usuário (MUITO IMPORTANTE)
-                Text(
-                  'Eu sou...',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color:
-                        Theme.of(context).textTheme.bodyMedium?.color ??
-                        Colors.grey[700],
+                  // Seleção de Tipo de Usuário (MUITO IMPORTANTE)
+                  Text(
+                    'Eu sou...',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).textTheme.bodyMedium?.color ??
+                          Colors.grey[700],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedUserType = UserType.adotante;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _selectedUserType == UserType.adotante
-                                  ? Colors.teal
-                                  : Colors.grey,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _selectedUserType == UserType.adotante
-                                    ? Icons.check_circle
-                                    : Icons.circle_outlined,
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedUserType = UserType.adotante;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              border: Border.all(
                                 color: _selectedUserType == UserType.adotante
-                                    ? Colors.teal
+                                    ? Theme.of(context).colorScheme.primary
                                     : Colors.grey,
+                                width: 2,
                               ),
-                              const SizedBox(width: 8),
-                              const Text('Adotante'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedUserType = UserType.abrigo;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _selectedUserType == UserType.abrigo
-                                  ? Colors.teal
-                                  : Colors.grey,
-                              width: 2,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _selectedUserType == UserType.abrigo
-                                    ? Icons.check_circle
-                                    : Icons.circle_outlined,
-                                color: _selectedUserType == UserType.abrigo
-                                    ? Colors.teal
-                                    : Colors.grey,
-                              ),
-                              const SizedBox(width: 8),
-                              const Text('Abrigo / ONG'),
-                            ],
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _selectedUserType == UserType.adotante
+                                      ? Icons.check_circle
+                                      : Icons.circle_outlined,
+                                  color: _selectedUserType == UserType.adotante
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text('Adotante'),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Campo de Nome
-                TextField(
-                  controller: _nomeUsuarioController,
-                  decoration: InputDecoration(
-                    labelText: 'Seu Nome',
-                    prefixIcon: const Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // Campo de Email
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'seuemail@exemplo.com',
-                    prefixIcon: const Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 15),
-
-                // Campo de Senha
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Senha',
-                    prefixIcon: const Icon(Icons.lock),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // Confirmar Senha
-                TextField(
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Confirmar Senha',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // Campos específicos para ONG (aparecem somente quando selecionado Abrigo)
-                if (_selectedUserType == UserType.abrigo) ...[
-                  TextField(
-                    controller: _nomeOngController,
-                    decoration: InputDecoration(
-                      labelText: 'Nome da ONG',
-                      prefixIcon: const Icon(Icons.business),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedUserType = UserType.abrigo;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: _selectedUserType == UserType.abrigo
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _selectedUserType == UserType.abrigo
+                                      ? Icons.check_circle
+                                      : Icons.circle_outlined,
+                                  color: _selectedUserType == UserType.abrigo
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text('Abrigo / ONG'),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _nomeAdministradorController,
+                  const SizedBox(height: 20),
+
+                  // Campo de Nome
+                  TextFormField(
+                    controller: _nomeUsuarioController,
                     decoration: InputDecoration(
-                      labelText: 'Nome do Administrador',
+                      labelText: 'Seu Nome',
                       prefixIcon: const Icon(Icons.person),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    validator: (value) =>
+                        (value?.isEmpty ?? true) ? 'Nome é obrigatório' : null,
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _enderecoController,
+                  const SizedBox(height: 15),
+
+                  // Campo de Email
+                  TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
-                      labelText: 'Endereço',
-                      prefixIcon: const Icon(Icons.location_on),
+                      labelText: 'Email',
+                      hintText: 'seuemail@exemplo.com',
+                      prefixIcon: const Icon(Icons.email),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) =>
+                        (value?.isEmpty ?? true) ? 'Email é obrigatório' : null,
                   ),
                   const SizedBox(height: 15),
-                ],
 
-                const SizedBox(height: 30),
-
-                // Botão de Cadastrar
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _register,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            'Cadastrar',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ),
-                const SizedBox(height: 20),
-
-                // Alternar para Login
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Já tem uma conta?'),
-                    TextButton(
-                      onPressed: widget.showLoginPage, // Chama a função
-                      child: const Text(
-                        'Faça login!',
-                        style: TextStyle(
-                          color: Colors.teal,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  // Campo de Senha
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Senha',
+                      prefixIcon: const Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) return 'Senha é obrigatória';
+                      if (value!.length < 6) {
+                        return 'A senha deve ter no mínimo 6 caracteres';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Confirmar Senha
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar Senha',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value != _passwordController.text) {
+                        return 'As senhas não coincidem';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Campos específicos para ONG (aparecem somente quando selecionado Abrigo)
+                  if (_selectedUserType == UserType.abrigo) ...[
+                    TextFormField(
+                      controller: _nomeOngController,
+                      decoration: InputDecoration(
+                        labelText: 'Nome da ONG',
+                        prefixIcon: const Icon(Icons.business),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) => _selectedUserType == UserType.abrigo &&
+                              (value?.isEmpty ?? true)
+                          ? 'Campo obrigatório'
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _nomeAdministradorController,
+                      decoration: InputDecoration(
+                        labelText: 'Nome do Administrador',
+                        prefixIcon: const Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) => _selectedUserType == UserType.abrigo &&
+                              (value?.isEmpty ?? true)
+                          ? 'Campo obrigatório'
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _enderecoController,
+                      decoration: InputDecoration(
+                        labelText: 'Endereço',
+                        prefixIcon: const Icon(Icons.location_on),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) => _selectedUserType == UserType.abrigo &&
+                              (value?.isEmpty ?? true)
+                          ? 'Campo obrigatório'
+                          : null,
+                    ),
+                    const SizedBox(height: 15),
                   ],
-                ),
-              ],
+
+                  const SizedBox(height: 30),
+
+                  // Botão de Cadastrar
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _register,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Cadastrar',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ),
+                  const SizedBox(height: 20),
+
+                  // Alternar para Login
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Já tem uma conta?'),
+                      TextButton(
+                        onPressed: widget.showLoginPage, // Chama a função
+                        child: Text(
+                          'Faça login!',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

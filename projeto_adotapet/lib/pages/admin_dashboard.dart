@@ -66,17 +66,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard da ONG'),
-        backgroundColor: const Color(0xFF64B5F6),
-      ),
+      appBar: AppBar(title: const Text('Dashboard da ONG')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '📊 Dashboard de Adoções',
+              'Dashboard de Adoções',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -116,7 +113,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             const SizedBox(height: 32),
             const Text(
-              '📋 Solicitações Recentes',
+              'Solicitações Recentes',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),

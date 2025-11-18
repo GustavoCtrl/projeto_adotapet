@@ -98,7 +98,6 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes da Solicitação'),
-        backgroundColor: const Color(0xFF64B5F6),
         actions: [
           if (status == 'pendente')
             Padding(
@@ -146,7 +145,7 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
 
             // Informações do Pet
             const Text(
-              '🐾 Informações do Pet',
+              'Informações do Pet',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -159,7 +158,7 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
 
             // Informações do Adotante
             const Text(
-              '👤 Suas Informações',
+              'Suas Informações',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -196,7 +195,7 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
 
             // Motivo da Adoção
             const Text(
-              '💭 Motivo da Adoção',
+              'Motivo da Adoção',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -233,16 +232,21 @@ class _AdoptionRequestEditPageState extends State<AdoptionRequestEditPage> {
                 children: [
                   const SizedBox(height: 12),
                   const Text(
-                    '❌ Motivo da Rejeição',
+                    'Motivo da Rejeição',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red[50],
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red[300]!),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                     child: Text(
                       widget.requestData['rejectionReason'],

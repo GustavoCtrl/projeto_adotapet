@@ -124,55 +124,45 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: Container(
-          color: Theme.of(context).colorScheme.primary,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: SafeArea(
-            child: Container(
-              height: 42,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: SizedBox(
+          height: 48,
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Buscar pets, abrigo ou raça...',
+              hintStyle: TextStyle(color: Theme.of(context).hintColor),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Theme.of(context).hintColor,
+              ),
+              suffixIcon: _search.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        color: Theme.of(context).hintColor,
+                      ),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() => _search = '');
+                        _fetchInitialPets();
+                      },
+                    )
+                  : null,
+              border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                borderSide: BorderSide.none,
               ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Buscar pets, abrigo ou raça...',
-                  hintStyle: TextStyle(color: Theme.of(context).hintColor),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Theme.of(context).hintColor,
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.clear, color: Theme.of(context).hintColor),
-                    onPressed: () {
-                      _searchController.clear();
-                      setState(() => _search = '');
-                    },
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                ),
-                onChanged: (value) {
-                  if (_debounce?.isActive ?? false) _debounce!.cancel();
-                  _debounce = Timer(const Duration(milliseconds: 500), () {
-                    setState(() {
-                      _search = value;
-                    });
-                    _fetchInitialPets(); // Reinicia a busca
-                  });
-                },
-              ),
+              filled: true,
+              fillColor: Theme.of(context).dividerColor.withOpacity(0.1),
             ),
+            onChanged: (value) {
+              if (_debounce?.isActive ?? false) _debounce!.cancel();
+              _debounce = Timer(const Duration(milliseconds: 500), () {
+                setState(() => _search = value);
+                _fetchInitialPets(); // Reinicia a busca
+              });
+            },
           ),
         ),
       ),
