@@ -4,6 +4,7 @@ import '../widgets/pet_load.dart';
 import 'my_adoptions_page.dart';
 import 'edit_profile_page.dart';
 import 'settings_page.dart';
+import 'pending_requests_page.dart';
 import '../main.dart' as main;
 
 class ProfilePage extends StatefulWidget {
@@ -194,18 +195,33 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Column(
                     children: [
-                      // Minhas Adoções
-                      _buildMenuTile(
-                        icon: Icons.pets,
-                        title: 'Minhas Adoções',
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const MyAdoptionsPage(),
-                            ),
-                          );
-                        },
-                      ),
+                      // Menu condicional baseado no tipo de usuário
+                      if (widget.currentAdminView == 'abrigo' ||
+                          widget.userRole == 'abrigo')
+                        _buildMenuTile(
+                          icon: Icons.inbox,
+                          title: 'Solicitações de Adoção',
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const PendingRequestsPage(),
+                              ),
+                            );
+                          },
+                        )
+                      else
+                        _buildMenuTile(
+                          icon: Icons.pets,
+                          title: 'Minhas Adoções',
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const MyAdoptionsPage(),
+                              ),
+                            );
+                          },
+                        ),
                       Divider(height: 0, color: Theme.of(context).dividerColor),
 
                       // Configurações
@@ -245,7 +261,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(                        
+                      style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 12,

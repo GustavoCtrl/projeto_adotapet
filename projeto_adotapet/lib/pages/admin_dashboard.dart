@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'pending_requests_page.dart';
 import 'adoption_request_detail_page.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -66,7 +67,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard da ONG')),
+      appBar: AppBar(title: const Text('Dashboard')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -89,7 +90,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   icon: Icons.pending_actions,
                   color: Colors.orange,
                   stream: _getPendingRequestsCount(),
-                  onTap: () => _showPendingRequests(),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const PendingRequestsPage(),
+                      ),
+                    );
+                  },
                 ),
                 _buildStatCard(
                   title: 'Pets Disponíveis',
@@ -277,75 +284,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showPendingRequests() {
-    final ongId = _getOngId();
-    if (ongId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Usuário não autenticado')));
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('adoption_requests')
-              .where('ongId', isEqualTo: ongId)
-              .where('status', isEqualTo: 'pendente')
-              .snapshots()
-              .asBroadcastStream(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('Nenhuma solicitação pendente'));
-            }
-
-            var requests = snapshot.data!.docs;
-
-            // Ordenar por data decrescente
-            requests.sort((a, b) {
-              final dateA =
-                  (a['requestDate'] as Timestamp?)?.toDate() ?? DateTime(1970);
-              final dateB =
-                  (b['requestDate'] as Timestamp?)?.toDate() ?? DateTime(1970);
-              return dateB.compareTo(dateA);
-            });
-
-            return ListView.builder(
-              itemCount: requests.length,
-              itemBuilder: (context, index) {
-                final data = requests[index].data() as Map<String, dynamic>;
-                final requestId = requests[index].id;
-                final petName = data['petName'] ?? 'Pet desconhecido';
-
-                return ListTile(
-                  title: Text(petName),
-                  trailing: const Icon(Icons.arrow_forward),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => AdoptionRequestDetailPage(
-                          requestId: requestId,
-                          requestData: data,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          },
-        );
-      },
     );
   }
 }

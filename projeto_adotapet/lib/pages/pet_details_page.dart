@@ -96,6 +96,13 @@ class _PetDetailsPageState extends State<PetDetailsPage>
           SliverAppBar(
             expandedHeight: 300.0,
             pinned: true,
+            leading: _buildAppBarAction(
+              context: context,
+              icon: Icons.arrow_back,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 widget.name,
